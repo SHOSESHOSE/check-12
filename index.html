@@ -1,0 +1,1657 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>SiteQuality-Master</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'Segoe UI',system-ui,sans-serif}
+body{background:#07090f;color:#dde4f2;overflow:hidden;height:100vh;display:flex;flex-direction:column}
+
+/* ══ TOPBAR ══ */
+.topbar{height:46px;background:#0b1120;border-bottom:1px solid #1e2d45;display:flex;align-items:center;padding:0 12px;gap:8px;flex-shrink:0;z-index:40}
+.logo-wrap{display:flex;align-items:center;gap:7px;cursor:pointer;flex-shrink:0}
+.logo-mark{width:26px;height:26px;border-radius:6px;background:linear-gradient(135deg,#1d4ed8,#0891b2);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:9px;color:#fff}
+.logo-title{font-size:11px;font-weight:700;color:#dde4f2;white-space:nowrap}
+.tb-sep{width:1px;height:18px;background:#1e2d45;flex-shrink:0}
+.tb-proj{font-size:12px;font-weight:700;color:#dde4f2;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tb-tabs{display:flex;gap:2px;flex-shrink:0}
+.ttab{padding:4px 9px;border:none;border-radius:4px;cursor:pointer;font-size:9px;font-weight:700;background:transparent;color:#334060;transition:all .15s;white-space:nowrap}
+.ttab.on{background:#162040;color:#60a5fa}
+.tb-right{display:flex;align-items:center;gap:5px;flex-shrink:0}
+.sc-chip{display:flex;flex-direction:column;align-items:center;background:#0a0f1a;border:1px solid #1e2d45;border-radius:5px;padding:2px 9px;min-width:50px}
+.sc-chip-n{font-size:18px;font-weight:900;line-height:1;font-variant-numeric:tabular-nums}
+.sc-chip-l{font-size:7px;color:#334060;text-transform:uppercase;letter-spacing:.07em}
+.btn-back{padding:4px 9px;border-radius:4px;border:1px solid #1e2d45;cursor:pointer;font-size:10px;font-weight:600;background:transparent;color:#7a8eaa;display:flex;align-items:center;gap:3px;transition:all .15s;white-space:nowrap}
+.btn-back:hover{background:#162030;color:#dde4f2}
+
+/* ══ SCREEN ROOT ══ */
+#sr{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0}
+
+/* ══ BUTTONS ══ */
+.btn{padding:5px 10px;border-radius:5px;border:none;cursor:pointer;font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;transition:all .15s;flex-shrink:0}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn-blue{background:#1d4ed8;color:#fff}.btn-blue:hover:not(:disabled){background:#1e40af}
+.btn-green{background:#15803d;color:#fff}.btn-green:hover:not(:disabled){background:#166534}
+.btn-ghost{background:transparent;color:#7a8eaa;border:1px solid #1e2d45}.btn-ghost:hover:not(:disabled){background:#121a2a;color:#dde4f2}
+.btn-cyan{background:#0e4f5c;color:#67e8f9;border:1px solid #0891b2}.btn-cyan:hover{background:#155e75}
+.btn-amber{background:#78350f;color:#fed7aa;border:1px solid #c2410c}
+.btn-red{background:#7f1d1d;color:#fca5a5}.btn-red:hover{background:#991b1b}
+.btn-sm{padding:4px 8px;font-size:10px}
+.btn-xs{padding:3px 6px;font-size:9px}
+.btn-full{width:100%;padding:10px;border-radius:6px;border:none;cursor:pointer;font-size:13px;font-weight:700;transition:all .15s}
+.bfb{background:#1d4ed8;color:#fff}.bfb:hover{background:#1e40af}
+.bfr{background:#7f1d1d;color:#fca5a5}.bfr:hover{background:#991b1b}
+
+/* ══ HOME ══ */
+.home{flex:1;overflow-y:auto;padding:20px 16px}
+.home::-webkit-scrollbar{width:4px}
+.home::-webkit-scrollbar-thumb{background:#1e2d45;border-radius:4px}
+.home-title{font-size:20px;font-weight:800;margin-bottom:3px}
+.home-sub{font-size:11px;color:#334060;margin-bottom:20px}
+.home-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.pcard{background:#0b1120;border:1px solid #1e2d45;border-radius:10px;padding:14px;cursor:pointer;transition:all .2s;position:relative}
+.pcard:hover{border-color:#2563eb;background:#0d1630;transform:translateY(-1px);box-shadow:0 4px 18px rgba(29,78,216,.12)}
+.pcard-name{font-size:14px;font-weight:700;color:#dde4f2;margin-bottom:5px;line-height:1.3;padding-right:52px}
+.pcard-meta{font-size:10px;color:#334060;line-height:1.7}
+.pcard-score{font-size:22px;font-weight:900;margin-top:8px}
+.pcard-acts{position:absolute;top:10px;right:10px;display:flex;gap:3px;opacity:0;transition:opacity .15s}
+.pcard:hover .pcard-acts{opacity:1}
+.pact{width:22px;height:22px;border-radius:4px;border:none;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center}
+.pact-e{background:#162040;color:#60a5fa}.pact-e:hover{background:#1e3060}
+.pact-d{background:#2d0a0a;color:#f87171}.pact-d:hover{background:#3d1010}
+.st-badge{display:inline-flex;align-items:center;padding:2px 6px;border-radius:4px;font-size:9px;font-weight:700;margin-top:5px}
+.st-prep{background:#1e2d45;color:#7a8eaa}.st-ready{background:#0f2e1a;color:#34d399}
+.st-active{background:#0a1e0a;color:#4ade80;border:1px solid #166534}.st-done{background:#0c1e38;color:#60a5fa}
+.new-pcard{background:transparent;border:2px dashed #1e2d45;border-radius:10px;padding:14px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:120px;gap:6px}
+.new-pcard:hover{border-color:#2563eb;background:#0d1630}
+.new-pcard-icon{font-size:26px;opacity:.35}
+.new-pcard-text{font-size:11px;color:#334060;font-weight:600}
+
+/* ══ MODAL ══ */
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;display:flex;align-items:center;justify-content:center;padding:14px}
+.modal{background:#0c1322;border:1px solid #1e2d45;border-radius:12px;width:100%;max-width:460px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6);max-height:calc(100vh - 28px);display:flex;flex-direction:column}
+.mh{padding:13px 16px;border-bottom:1px solid #1e2d45;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.mh-title{font-size:13px;font-weight:700}
+.mb{padding:14px 16px;overflow-y:auto;display:flex;flex-direction:column;gap:11px}
+.mb::-webkit-scrollbar{width:3px}
+.mb::-webkit-scrollbar-thumb{background:#1e2d45}
+.mf{padding:10px 16px;border-top:1px solid #1e2d45;display:flex;gap:6px;justify-content:flex-end;flex-shrink:0}
+.mfl{font-size:9px;font-weight:700;color:#334060;letter-spacing:.07em;text-transform:uppercase;margin-bottom:5px}
+.mfi{width:100%;padding:8px 10px;background:#07090f;border:1px solid #1e2d45;border-radius:6px;color:#dde4f2;font-size:13px;outline:none;font-family:inherit;transition:border-color .15s}
+.mfi:focus{border-color:#2563eb}
+.mfi-lg{font-size:15px;font-weight:600;padding:10px 12px}
+.xbtn{width:24px;height:24px;border-radius:4px;border:none;cursor:pointer;background:#121b2e;color:#7a8eaa;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.xbtn:hover{background:#1e2d45;color:#dde4f2}
+
+/* plan drop */
+.plan-drop{border:2px dashed #1e3050;border-radius:7px;padding:18px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.plan-drop:hover,.plan-drop.drag{border-color:#3b82f6;background:rgba(59,130,246,.04)}
+.plan-drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.plan-drop-icon{font-size:28px;display:block;margin-bottom:6px}
+.plan-drop-text{font-size:12px;color:#7a8eaa;font-weight:600}
+.plan-drop-hint{font-size:10px;color:#334060;margin-top:3px}
+.plan-preview{width:100%;height:90px;object-fit:contain;border-radius:5px;border:1px solid #1e2d45;background:#07090f;display:block;margin-top:7px}
+.plan-pages-info{font-size:10px;color:#34d399;margin-top:4px;font-weight:600}
+.plan-loading{display:flex;align-items:center;gap:7px;font-size:11px;color:#7a8eaa;padding:8px 0}
+.plan-spinner{width:16px;height:16px;border:2px solid #1e2d45;border-top-color:#3b82f6;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ══ CANVAS AREA ══ */
+.canvas-wrap{flex:1;position:relative;overflow:hidden;background:#07090f;touch-action:none}
+#canvas{width:100%;height:100%;position:relative;cursor:crosshair;transform-origin:0 0;will-change:transform}
+#canvas.notap{cursor:default}
+#canvas.dragging{cursor:grab}
+.zoom-badge{position:absolute;top:10px;right:10px;background:#0b1120;border:1px solid #1e2d45;border-radius:6px;padding:3px 8px;font-size:10px;color:#7a8eaa;font-weight:600;z-index:10;pointer-events:none;display:none}
+.zoom-badge.visible{display:block}
+.grid-bg{position:absolute;inset:0;background-image:linear-gradient(#1e2d45 1px,transparent 1px),linear-gradient(90deg,#1e2d45 1px,transparent 1px);background-size:44px 44px;opacity:.28;pointer-events:none}
+.floor-img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;opacity:.88}
+.no-plan-msg{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;pointer-events:none}
+.np-icon{font-size:42px;opacity:.22}
+.np-text{font-size:13px;color:#334060;font-weight:600}
+.np-hint{font-size:10px;color:#253050}
+.cv-hint{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:10px;color:#7a8eaa;background:#0b1120;padding:4px 12px;border-radius:14px;border:1px solid #1e2d45;pointer-events:none;white-space:nowrap;z-index:5}
+.pdf-nav{position:absolute;bottom:10px;right:10px;display:flex;align-items:center;gap:4px;background:#0b1120;border:1px solid #1e2d45;border-radius:7px;padding:3px 7px;z-index:10}
+.pnbtn{width:22px;height:22px;border-radius:3px;border:1px solid #1e2d45;cursor:pointer;background:#121b2e;color:#7a8eaa;font-size:12px;display:flex;align-items:center;justify-content:center}
+.pnbtn:disabled{opacity:.3;cursor:default}
+.pninfo{font-size:9px;color:#7a8eaa;font-weight:700;min-width:40px;text-align:center}
+
+/* ══ PINS ══ */
+.pin{position:absolute;transform:translate(-50%,-100%);cursor:pointer;z-index:10;transition:transform .1s}
+.pin:hover{transform:translate(-50%,-100%) scale(1.18);z-index:20}
+.pin-mk{width:26px;height:26px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,.18);box-shadow:0 2px 10px rgba(0,0,0,.7);position:relative}
+.pin-in{transform:rotate(45deg);font-size:10px;font-weight:800;color:#fff;line-height:1}
+.pin-photo-ring{position:absolute;inset:-4px;border-radius:50% 50% 50% 0;border:2px solid #06b6d4;animation:pring 2s infinite}
+.pin-photo-dot{position:absolute;top:-3px;right:-3px;width:8px;height:8px;border-radius:50%;background:#06b6d4;border:1.5px solid #07090f;transform:rotate(45deg)}
+.pin-ua{position:absolute;top:-3px;left:-3px;width:8px;height:8px;border-radius:50%;background:#f59e0b;border:1.5px solid #07090f;transform:rotate(45deg)}
+.pin-insp{position:absolute;bottom:-4px;right:-3px;width:8px;height:8px;border-radius:50%;background:#8b5cf6;border:1.5px solid #07090f;transform:rotate(45deg)}
+@keyframes pring{0%,100%{box-shadow:0 0 4px rgba(6,182,212,.4)}50%{box-shadow:0 0 12px rgba(6,182,212,.9)}}
+
+/* ══ INSPECTION MODAL (full-screen on mobile, centered on desktop) ══ */
+.insp-modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:300;display:flex;align-items:flex-end;justify-content:center}
+@media(min-width:600px){.insp-modal-ov{align-items:center}}
+.insp-modal{background:#0c1322;border:1px solid #1e2d45;border-radius:14px 14px 0 0;width:100%;max-width:520px;max-height:92vh;display:flex;flex-direction:column;box-shadow:0 -8px 40px rgba(0,0,0,.7)}
+@media(min-width:600px){.insp-modal{border-radius:14px;max-height:88vh}}
+.im-handle{width:36px;height:4px;background:#1e2d45;border-radius:2px;margin:8px auto 0;flex-shrink:0}
+.im-header{padding:10px 14px 10px;border-bottom:1px solid #1e2d45;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.im-title{font-size:13px;font-weight:700}
+.im-role-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;margin-top:2px}
+.rb-sup{background:#0c2040;color:#60a5fa}.rb-ins{background:#0a1e14;color:#34d399}
+.im-body{overflow-y:auto;flex:1;padding:0}
+.im-body::-webkit-scrollbar{width:3px}
+.im-body::-webkit-scrollbar-thumb{background:#1e2d45}
+.im-footer{padding:10px 14px;border-top:1px solid #1e2d45;display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+
+/* form fields inside modal */
+.fg{padding:9px 14px;border-bottom:1px solid #0b1120}
+.fl{font-size:9px;font-weight:700;color:#334060;letter-spacing:.07em;text-transform:uppercase;margin-bottom:5px;display:flex;align-items:center;justify-content:space-between}
+.fl-req{color:#ef4444;font-size:9px}
+.fi{width:100%;padding:7px 9px;background:#07090f;border:1px solid #1e2d45;border-radius:5px;color:#dde4f2;font-size:12px;outline:none;font-family:inherit;transition:border-color .15s}
+.fi:focus{border-color:#2563eb}
+.fi-ta{min-height:62px;resize:vertical}
+select.fi option{background:#0c1322}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip{padding:4px 8px;border-radius:12px;border:1px solid #1e2d45;cursor:pointer;font-size:10px;font-weight:500;color:#334060;background:transparent;transition:all .15s}
+.chip:hover{color:#7a8eaa;border-color:#253050}
+.chip.on{border-color:#2563eb;color:#60a5fa;background:#0d1e40}
+.chip.don{border-color:#16a34a;color:#4ade80;background:#041e10}
+.sev-row{display:flex;gap:4px}
+.sv{flex:1;padding:8px 3px;border-radius:5px;border:2px solid #1e2d45;cursor:pointer;font-size:9px;font-weight:800;text-align:center;background:transparent;transition:all .15s;line-height:1.6}
+.sv-res{color:#ef4444}.sv-res.on{border-color:#ef4444;background:#2a0808}
+.sv-gen{color:#f97316}.sv-gen.on{border-color:#f97316;background:#271207}
+.sv-cok{color:#eab308}.sv-cok.on{border-color:#eab308;background:#1c1300}
+
+/* preset accordion */
+.preset-toggle{display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-size:9px;font-weight:700;color:#334060;letter-spacing:.07em;text-transform:uppercase;padding:9px 14px;border-bottom:1px solid #0b1120;user-select:none}
+.preset-toggle-arrow{transition:transform .2s;font-size:11px}
+.preset-toggle-arrow.open{transform:rotate(180deg)}
+.preset-body{overflow:hidden;transition:max-height .25s ease;max-height:0}
+.preset-body.open{max-height:200px}
+.preset-inner{padding:8px 14px;border-bottom:1px solid #0b1120;display:flex;flex-wrap:wrap;gap:4px}
+
+/* photo */
+.pdrop{border:2px dashed #1e3050;border-radius:6px;padding:10px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;margin-top:2px}
+.pdrop:hover,.pdrop.drag{border-color:#06b6d4;background:rgba(6,182,212,.04)}
+.pdrop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.pdrop-icon{font-size:18px;display:block;margin-bottom:2px}
+.pdrop-text{font-size:11px;color:#7a8eaa}
+.pdrop-hint{font-size:9px;color:#334060;margin-top:1px}
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:5px}
+.pthumb{position:relative;aspect-ratio:4/3;border-radius:4px;overflow:hidden;border:1px solid #1e2d45}
+.pthumb img{width:100%;height:100%;object-fit:cover;display:block}
+.pdel{position:absolute;top:2px;right:2px;width:16px;height:16px;border-radius:50%;background:rgba(0,0,0,.8);border:none;cursor:pointer;color:#f87171;font-size:10px;display:flex;align-items:center;justify-content:center}
+.plbl{position:absolute;bottom:2px;left:2px;background:rgba(6,182,212,.85);color:#fff;font-size:8px;font-weight:700;padding:1px 3px;border-radius:2px}
+
+/* ══ INSPECTOR START SCREEN ══ */
+.insp-start{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;gap:16px;text-align:center}
+.insp-start-icon{font-size:48px;opacity:.4}
+.insp-start-title{font-size:18px;font-weight:800}
+.insp-start-sub{font-size:12px;color:#334060;line-height:1.7;max-width:300px}
+.member-select-grid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:400px}
+.member-btn{padding:8px 16px;border-radius:20px;border:1.5px solid #1e2d45;cursor:pointer;font-size:12px;font-weight:600;background:transparent;color:#7a8eaa;transition:all .15s}
+.member-btn:hover{border-color:#2563eb;color:#60a5fa;background:#0d1e40}
+.member-btn.on{border-color:#16a34a;color:#4ade80;background:#041e10}
+
+/* ══ SUB TOOLBAR (action bar below topbar) ══ */
+.sub-toolbar{padding:0 12px;height:34px;background:#0b1120;border-bottom:1px solid #1e2d45;display:flex;align-items:center;gap:6px;flex-shrink:0;overflow-x:auto}
+.sub-toolbar::-webkit-scrollbar{height:0}
+
+/* ══ ASSIGN VIEW ══ */
+.av-prog{padding:5px 12px;background:#0a1018;border-bottom:1px solid #1e2d45;display:flex;align-items:center;gap:7px;flex-shrink:0;font-size:11px;color:#7a8eaa}
+.prog-track{flex:1;height:5px;background:#1e2d45;border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:#16a34a;border-radius:3px;transition:width .4s}
+.scroll-view{flex:1;overflow-y:auto;padding:9px}
+.scroll-view::-webkit-scrollbar{width:3px}
+.scroll-view::-webkit-scrollbar-thumb{background:#1e2d45}
+.acard{background:#0b1120;border:1px solid #1e2d45;border-radius:7px;margin-bottom:7px;display:flex;overflow:hidden}
+.acard-checked{border-color:#2563eb!important;background:#0a1630!important}
+.acard-map{width:60px;height:60px;position:relative;overflow:hidden;background:#07090f;flex-shrink:0}
+.amg{position:absolute;inset:0;background-image:linear-gradient(#1e2d45 1px,transparent 1px),linear-gradient(90deg,#1e2d45 1px,transparent 1px);background-size:12px 12px;opacity:.5}
+.acard-photo{width:60px;height:54px;object-fit:cover;display:block;flex-shrink:0;border-top:1px solid #1e2d45}
+.acard-nophoto{width:60px;height:54px;display:flex;align-items:center;justify-content:center;font-size:8px;color:#334060;background:#07090f;flex-shrink:0;border-top:1px solid #1e2d45;flex-direction:column;gap:1px}
+.acard-r{flex:1;padding:7px 9px;min-width:0}
+.acard-text{font-size:12px;font-weight:600;color:#dde4f2;margin-bottom:3px;line-height:1.3}
+.atags{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:5px}
+.tag{font-size:9px;padding:2px 5px;border-radius:3px;font-weight:600}
+.tw{background:#2a1a03;color:#fde68a}
+.asel-row{display:flex;gap:4px;align-items:center}
+.asel{flex:1;padding:4px 7px;background:#07090f;border:1px solid #1e2d45;border-radius:4px;color:#dde4f2;font-size:11px;outline:none;font-family:inherit}
+.asel:focus{border-color:#2563eb}
+.asave{padding:4px 8px;border-radius:4px;border:none;cursor:pointer;font-size:10px;font-weight:700;background:#1d4ed8;color:#fff}
+.asave:hover{background:#1e40af}
+.adone-tag{font-size:10px;font-weight:700;color:#4ade80;background:#041e10;padding:2px 7px;border-radius:4px;display:inline-block}
+.send-bar{padding:7px 12px;background:#041e10;border-top:1px solid #0f4020;display:flex;align-items:center;gap:7px;flex-shrink:0}
+.send-bar-text{font-size:11px;color:#34d399;font-weight:700;flex:1}
+.inspector-tag{display:inline-flex;align-items:center;gap:3px;padding:1px 5px;border-radius:4px;background:#130e2a;color:#a78bfa;font-size:8px;font-weight:700}
+
+/* ══ VENDOR VIEW ══ */
+.vr-tabs{display:flex;flex-wrap:wrap;gap:3px;padding:5px 9px;background:#0a0f1a;border-bottom:1px solid #1e2d45;flex-shrink:0}
+.vtab{padding:3px 9px;border-radius:12px;border:1px solid #1e2d45;cursor:pointer;font-size:10px;font-weight:600;background:transparent;color:#334060;transition:all .15s;display:flex;align-items:center;gap:3px}
+.vtab.on{background:#0c2040;border-color:#2563eb;color:#60a5fa}
+.icard{background:#0b1120;border:1px solid #1e2d45;border-radius:8px;margin-bottom:9px;overflow:hidden}
+.ic-head{padding:9px 11px;display:flex;align-items:flex-start;gap:8px;border-bottom:1px solid #1e2d45}
+.ic-num{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;flex-shrink:0;margin-top:1px}
+.ic-info{flex:1;min-width:0}
+.ic-text{font-size:12px;font-weight:600;color:#dde4f2;margin-bottom:3px;line-height:1.4}
+.ic-meta{display:flex;flex-wrap:wrap;gap:3px}
+.tv{background:#0c2040;color:#60a5fa}
+.ic-loc{padding:8px 11px;border-bottom:1px solid #1e2d45;display:flex;align-items:center;gap:8px}
+.mini-map{width:64px;height:56px;border-radius:4px;border:1px solid #1e3050;position:relative;overflow:hidden;flex-shrink:0;background:#07090f}
+.mg2{position:absolute;inset:0;background-image:linear-gradient(#1e2d45 1px,transparent 1px),linear-gradient(90deg,#1e2d45 1px,transparent 1px);background-size:12px 12px;opacity:.5}
+.mpin{position:absolute;transform:translate(-50%,-100%);pointer-events:none}
+.mpin-dot{width:8px;height:8px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:1.5px solid rgba(255,255,255,.3)}
+.ic-loc-text{font-size:10px;color:#7a8eaa;line-height:1.75}
+.ic-loc-text strong{color:#dde4f2}
+.ic-photos{padding:7px 11px}
+.ic-ph-lbl{font-size:9px;font-weight:700;color:#334060;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.ic-ph-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
+.ic-ph{aspect-ratio:4/3;border-radius:3px;overflow:hidden;border:1px solid #1e2d45}
+.ic-ph img{width:100%;height:100%;object-fit:cover;display:block}
+.ic-noph{aspect-ratio:4/3;border-radius:3px;border:1px dashed #1e3050;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:9px;color:#334060;gap:2px}
+.ic-copy-row{padding:6px 11px;border-top:1px solid #1e2d45}
+.ic-copy-btn{width:100%;padding:4px;border-radius:4px;border:1px solid #1e2d45;cursor:pointer;font-size:10px;font-weight:600;background:#0a1018;color:#7a8eaa;transition:all .15s}
+.ic-copy-btn:hover{background:#121b2e;color:#dde4f2}
+
+/* ══ REPORT ══ */
+.rgrid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.stat-box{background:#07090f;border:1px solid #1e2d45;border-radius:6px;padding:9px 11px}
+.stat-val{font-size:20px;font-weight:900;line-height:1;margin-bottom:2px}
+.stat-lbl{font-size:9px;color:#334060;letter-spacing:.04em}
+.rcard{background:#0b1120;border:1px solid #1e2d45;border-radius:8px;padding:10px;margin-bottom:9px}
+.rcard-title{font-size:9px;font-weight:700;color:#334060;letter-spacing:.07em;text-transform:uppercase;margin-bottom:8px}
+.rsec{font-size:9px;font-weight:700;color:#334060;letter-spacing:.1em;text-transform:uppercase;margin:12px 0 6px;display:flex;align-items:center;gap:5px}
+.rsec::after{content:'';flex:1;height:1px;background:#1e2d45}
+.sc-row{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.sc-name{font-size:11px;color:#7a8eaa;width:80px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sc-track{flex:1;height:6px;background:#07090f;border-radius:4px;overflow:hidden}
+.sc-fill{height:100%;border-radius:4px;transition:width .5s}
+.sc-val{font-size:11px;font-weight:800;width:30px;text-align:right;flex-shrink:0}
+.sc-cnt{font-size:9px;color:#334060;width:26px;text-align:right;flex-shrink:0}
+.villain-row{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid #0b1120}
+.villain-row:last-child{border-bottom:none}
+.villain-name{font-size:11px;font-weight:600;width:44px;flex-shrink:0;color:#dde4f2}
+.villain-track{flex:1;height:13px;background:#07090f;border-radius:4px;overflow:hidden;position:relative}
+.villain-bar{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:5px;font-size:9px;font-weight:700;color:#fff;min-width:14px;transition:width .5s}
+.villain-pts{font-size:10px;font-weight:800;color:#f87171;flex-shrink:0;width:38px;text-align:right}
+.pie-row{display:flex;align-items:center;gap:5px;margin-bottom:4px}
+.pie-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.pie-name{font-size:11px;color:#7a8eaa;flex:1}
+.pie-bw{width:70px;height:5px;background:#07090f;border-radius:3px;overflow:hidden}
+.pie-b{height:100%;border-radius:3px;transition:width .5s}
+.pie-pct{font-size:10px;font-weight:700;color:#dde4f2;width:28px;text-align:right}
+
+/* ══ GATE ITEMS ══ */
+.gate-item{background:#07090f;border:1px solid #1e2d45;border-radius:7px;padding:10px;display:flex;gap:8px}
+.gcheck{width:20px;height:20px;border-radius:50%;border:2px solid #1e2d45;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;font-weight:700;transition:all .2s}
+.gcheck.done{background:#15803d;border-color:#16a34a;color:#fff}
+.gate-lbl{font-size:12px;font-weight:600;color:#dde4f2;margin-bottom:3px}
+.gate-desc{font-size:10px;color:#334060;line-height:1.5}
+.gate-ubtn{padding:4px 9px;border-radius:5px;border:1px solid #1e2d45;cursor:pointer;font-size:10px;font-weight:700;background:#121b2e;color:#7a8eaa;margin-top:5px;display:inline-block;position:relative;overflow:hidden}
+.gate-ubtn:hover{background:#1e2d45;color:#dde4f2}
+.gate-ubtn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.gate-prev{margin-top:5px;width:100%;height:50px;object-fit:cover;border-radius:4px;border:1px solid #1e2d45}
+.mbar-wrap{height:4px;background:#1e2d45;border-radius:2px;overflow:hidden;margin-top:5px}
+.mbar-fill{height:100%;background:#16a34a;border-radius:2px;transition:width .4s}
+
+/* ══ STAFF DB ══ */
+.staff-card{background:#07090f;border:1px solid #1e2d45;border-radius:6px;padding:9px 11px;display:flex;align-items:center;gap:9px;margin-bottom:5px}
+.staff-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#fff;flex-shrink:0}
+.staff-name{font-size:12px;font-weight:600;color:#dde4f2;flex:1}
+.staff-role{font-size:10px;color:#334060}
+.staff-del{width:22px;height:22px;border-radius:4px;border:none;cursor:pointer;background:#2d0a0a;color:#f87171;font-size:11px;display:flex;align-items:center;justify-content:center}
+
+/* ══ TOAST ══ */
+.toast{position:fixed;bottom:14px;left:50%;transform:translateX(-50%) translateY(14px);background:#0d2040;color:#60a5fa;padding:7px 14px;border-radius:6px;font-size:11px;font-weight:700;z-index:9999;opacity:0;transition:all .3s;pointer-events:none;border:1px solid #2563eb}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(max-width:580px){
+  .home-grid{grid-template-columns:1fr 1fr}
+  .rgrid2{grid-template-columns:1fr}
+}
+@media(max-width:380px){.home-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="topbar" id="topbar">
+  <div class="logo-wrap" id="logo-home">
+    <div class="logo-mark">SQ</div>
+    <span class="logo-title">SiteQuality</span>
+  </div>
+  <div class="tb-sep" id="tb-sep" style="display:none"></div>
+  <div class="tb-proj" id="tb-proj" style="display:none"></div>
+  <div class="tb-tabs" id="tb-tabs" style="display:none">
+    <button class="ttab on" data-tab="plan">図面</button>
+    <button class="ttab" data-tab="assign">割当</button>
+    <button class="ttab" data-tab="vendor">指示書</button>
+  </div>
+  <div class="tb-right" id="tb-right">
+    <div class="sc-chip" id="tb-score" style="display:none">
+      <div class="sc-chip-n" id="tb-score-n">-</div>
+      <div class="sc-chip-l">スコア</div>
+    </div>
+    <button class="btn-back" id="tb-back" style="display:none">← 案件一覧</button>
+  </div>
+</div>
+<div id="sr"></div>
+<div class="toast" id="toast"></div>
+<div id="mr"></div>
+
+<script>
+// ══════════════════════════════════════
+// CONSTANTS
+// ══════════════════════════════════════
+const VENDORS=['大工','電気','内装','設備','塗装','タイル'];
+const SEVS=[
+  {key:'res',label:'残工事・未済',sub:'未完了工事', pts:5,  color:'#ef4444'},
+  {key:'gen',label:'その他指摘',  sub:'キズ/建具/塗装等',pts:1,  color:'#f97316'},
+  {key:'cok',label:'コーク・汚れ',sub:'仕上げ微細', pts:0.1,color:'#eab308'},
+];
+const SEV_MAP={res:{pts:5,color:'#ef4444'},gen:{pts:1,color:'#f97316'},cok:{pts:0.1,color:'#eab308'}};
+const PIE_COLS=['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4'];
+const PRESETS_S=['クロス浮き','フローリングキズ','建具隙間','壁面汚れ','コンセント未施工','タイル欠け','塗装ムラ','シーリング不足','窓枠コーク','ドア建付け不良'];
+const PRESETS_I=['クロスにキズ','フローリングに傷','壁に汚れ','建具に隙間','塗装ムラ','タイル割れ','コーク未施工','窓枠に汚れ','設備未接続','扉が閉まらない'];
+const ST={PREP:'prep',READY:'ready',ACTIVE:'active',DONE:'done'};
+const ST_LABEL={prep:'準備中',ready:'ゲート通過',active:'検査中',done:'完了'};
+const ST_CLS={prep:'st-prep',ready:'st-ready',active:'st-active',done:'st-done'};
+const PROJ_COLORS=['#3b82f6','#10b981','#f59e0b','#8b5cf6','#ef4444','#06b6d4','#ec4899','#14b8a6'];
+const AVATAR_COLORS=['#1d4ed8','#15803d','#b45309','#7c3aed','#be185d','#0e7490'];
+const SK='sqm_v6';
+
+// ══════════════════════════════════════
+// DB & UI STATE
+// ══════════════════════════════════════
+let DB={
+  projects:[],   // {id,name,color,supervisor,status,gate,floorPlan,createdAt}
+  pins:[],       // {id,projectId,x,y,text,sev,vendor,done,photos,inspectorId,inspectorName}
+  staff:[],      // {id,name,role:'supervisor'|'inspector',colorIdx}
+};
+let UI={
+  screen:'home',  // 'home'|'inspect'
+  projectId:null,
+  tab:'plan',
+  role:'supervisor',  // 'supervisor'|'inspector'
+  inspectorId:null,   // 検査員セッション中の担当者ID
+  inspectorSessionPins:[], // 今回のセッション指摘（検査員用）
+  activeVendor:null,
+  inspModal:null,     // 現在開いている指摘フォームの状態
+  presetOpen:false,
+};
+
+function loadDB(){
+  try{const d=localStorage.getItem(SK);if(d){const p=JSON.parse(d);DB.projects=p.projects||[];DB.pins=p.pins||[];DB.staff=p.staff||[];}}catch(e){}
+}
+function saveDB(){
+  try{localStorage.setItem(SK,JSON.stringify(DB));}catch(e){showToast('ストレージ容量が不足しています');}
+}
+
+// ══════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const q=sel=>document.querySelector(sel);
+const uid=()=>Math.random().toString(36).slice(2,10);
+const proj=(id=UI.projectId)=>DB.projects.find(p=>p.id===id)||null;
+const projPins=(id=UI.projectId)=>DB.pins.filter(p=>p.projectId===id);
+const calcScore=pins=>{
+  let s=100;
+  pins.forEach(p=>{if(!p.done&&p.vendor)s-=(SEV_MAP[p.sev]?.pts||0);});
+  return Math.max(0,Math.round(s*10)/10);
+};
+const scColor=s=>s>=95?'#3b82f6':s>=90?'#22c55e':s>=80?'#eab308':s>=70?'#f97316':'#ef4444';
+const scClass=s=>s>=90?'hi':s>=80?'mi':'lo';
+const pinBg=sev=>SEV_MAP[sev]?.color||'#6b7280';
+const unassigned=(id=UI.projectId)=>projPins(id).filter(p=>!p.vendor&&!p.done).length;
+
+let toastTm=null;
+const showToast=msg=>{
+  const el=q('#toast');el.textContent=msg;el.classList.add('show');
+  clearTimeout(toastTm);toastTm=setTimeout(()=>el.classList.remove('show'),2400);
+};
+
+// ══════════════════════════════════════
+// TOPBAR
+// ══════════════════════════════════════
+function updateTopbar(){
+  const inInsp=UI.screen==='inspect';
+  const pr=proj();
+  q('#tb-sep').style.display=inInsp?'':'none';
+  q('#tb-proj').style.display=inInsp?'':'none';
+  q('#tb-tabs').style.display=inInsp&&UI.role==='supervisor'?'':'none';
+  q('#tb-score').style.display=inInsp?'':'none';
+  q('#tb-back').style.display=inInsp?'':'none';
+  if(inInsp&&pr){
+    q('#tb-proj').textContent=pr.name;
+    const sc=calcScore(projPins());
+    q('#tb-score-n').textContent=sc;
+    q('#tb-score-n').style.color=scColor(sc);
+    document.querySelectorAll('.ttab').forEach(b=>b.classList.toggle('on',b.dataset.tab===UI.tab));
+  }
+}
+
+// ══════════════════════════════════════
+// ROUTING
+// ══════════════════════════════════════
+function goHome(){
+  UI.screen='home';UI.projectId=null;UI.inspModal=null;UI.inspectorId=null;UI.inspectorSessionPins=[];
+  updateTopbar();renderHome();
+}
+function goInspect(id){
+  UI.screen='inspect';UI.projectId=id;UI.tab='plan';UI.inspModal=null;
+  updateTopbar();renderInspect();
+}
+function render(){if(UI.screen==='home')renderHome();else renderInspect();updateTopbar();}
+
+// ══════════════════════════════════════
+// HOME
+// ══════════════════════════════════════
+function renderHome(){
+  const root=q('#sr');
+  let h=`<div class="home">
+    <div class="home-title">案件一覧</div>
+    <div class="home-sub">案件をタップして検査開始 · ✏で編集 · 設定から社員を管理</div>
+    <div class="home-grid">`;
+  DB.projects.forEach(pr=>{
+    const pins=DB.pins.filter(p=>p.projectId===pr.id);
+    const sc=calcScore(pins);
+    const active=pins.filter(p=>!p.done).length;
+    const ua=pins.filter(p=>!p.done&&!p.vendor).length;
+    const st=pr.status||ST.PREP;
+    const date=pr.createdAt?new Date(pr.createdAt).toLocaleDateString('ja-JP'):'';
+    h+=`<div class="pcard" data-proj="${pr.id}">
+      <div class="pcard-acts">
+        <button class="pact pact-e" data-edit="${pr.id}">✏</button>
+        <button class="pact pact-d" data-del="${pr.id}">×</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px">
+        <div style="width:9px;height:9px;border-radius:50%;background:${pr.color||'#3b82f6'};flex-shrink:0"></div>
+        <div class="pcard-name">${esc(pr.name)}</div>
+      </div>
+      <div class="pcard-meta">
+        ${pr.supervisor?`担当：${esc(pr.supervisor)}<br>`:''}指摘 ${active}件${ua>0?` / <span style="color:#fde68a;font-size:10px">⚠ 未割当 ${ua}件</span>`:''} / ${date}
+      </div>
+      <span class="st-badge ${ST_CLS[st]}">${ST_LABEL[st]}</span>
+      <div class="pcard-score" style="color:${scColor(sc)}">${sc}<span style="font-size:11px;color:#334060"> 点</span></div>
+    </div>`;
+  });
+  h+=`<div class="new-pcard" id="btn-new"><div class="new-pcard-icon">＋</div><div class="new-pcard-text">新規案件を追加</div></div>
+    </div>
+    <div style="margin-top:20px;display:flex;gap:8px">
+      <button class="btn btn-ghost btn-sm" id="btn-staff">👥 社員DB管理</button>
+    </div>
+  </div>`;
+  root.innerHTML=h;
+  q('#btn-new').addEventListener('click',showNewProjModal);
+  q('#btn-staff').addEventListener('click',showStaffModal);
+  root.querySelectorAll('[data-proj]').forEach(card=>{
+    card.addEventListener('click',e=>{
+      if(e.target.closest('[data-edit],[data-del]'))return;
+      goInspect(card.dataset.proj);
+    });
+  });
+  root.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();showEditProjModal(b.dataset.edit);}));
+  root.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',e=>{
+    e.stopPropagation();
+    const pr=DB.projects.find(p=>p.id===b.dataset.del);if(!pr)return;
+    if(!confirm(`「${pr.name}」を削除しますか？\n指摘データも削除されます。`))return;
+    DB.projects=DB.projects.filter(p=>p.id!==b.dataset.del);
+    DB.pins=DB.pins.filter(p=>p.projectId!==b.dataset.del);
+    saveDB();renderHome();
+  }));
+}
+
+// ══════════════════════════════════════
+// PROJECT MODALS
+// ══════════════════════════════════════
+function showNewProjModal(){
+  q('#mr').innerHTML=`<div class="modal-ov" id="np-ov">
+    <div class="modal">
+      <div class="mh"><div class="mh-title">＋ 新規案件</div><button class="xbtn" id="np-x">×</button></div>
+      <div class="mb">
+        <div><div class="mfl">案件名（お客様名）<span style="color:#ef4444"> 必須</span></div>
+        <input class="mfi mfi-lg" id="np-name" placeholder="例：山田 太郎 様" autofocus></div>
+        <div><div class="mfl">担当監督（任意）</div>
+          <select class="mfi" id="np-sup">
+            <option value="">— 選択してください —</option>
+            ${DB.staff.filter(s=>s.role==='supervisor').map(s=>`<option value="${esc(s.name)}">${esc(s.name)}</option>`).join('')}
+            <option value="__other__">その他（直接入力）</option>
+          </select>
+          <input class="mfi" id="np-sup-other" placeholder="担当監督の氏名" style="margin-top:5px;display:none">
+        </div>
+        <div><div class="mfl">図面ファイル（後で設定も可）</div>
+          ${planDropHTML('np-plan')}
+          <div id="np-plan-st" style="margin-top:5px"></div>
+        </div>
+      </div>
+      <div class="mf">
+        <button class="btn btn-ghost btn-sm" id="np-cancel">キャンセル</button>
+        <button class="btn btn-blue btn-sm" id="np-ok">作成する</button>
+      </div>
+    </div>
+  </div>`;
+  const close=()=>{q('#mr').innerHTML='';};
+  q('#np-x').addEventListener('click',close);q('#np-cancel').addEventListener('click',close);
+  q('#np-ov').addEventListener('click',e=>{if(e.target.id==='np-ov')close();});
+  let pendingPlan=null;
+  bindPlanDrop('np-plan','np-plan-st',plan=>{pendingPlan=plan;});
+  q('#np-sup').addEventListener('change',()=>{
+    const isOther=q('#np-sup').value==='__other__';
+    q('#np-sup-other').style.display=isOther?'block':'none';
+  });
+  q('#np-ok').addEventListener('click',()=>{
+    const name=q('#np-name').value.trim();
+    if(!name){showToast('案件名を入力してください');return;}
+    const supSel=q('#np-sup').value;
+    const supervisor=supSel==='__other__'?q('#np-sup-other').value.trim():supSel;
+    const id=uid();
+    DB.projects.push({id,name,supervisor,
+      color:PROJ_COLORS[DB.projects.length%PROJ_COLORS.length],
+      status:ST.PREP,gate:{},floorPlan:pendingPlan||null,createdAt:Date.now()});
+    saveDB();close();renderHome();showToast(`「${name}」を作成しました`);
+  });
+}
+function showEditProjModal(id){
+  const pr=DB.projects.find(p=>p.id===id);if(!pr)return;
+  const hasPlan=!!(pr.floorPlan?.pages?.length);
+  q('#mr').innerHTML=`<div class="modal-ov" id="ep-ov">
+    <div class="modal">
+      <div class="mh"><div class="mh-title">✏ 案件を編集</div><button class="xbtn" id="ep-x">×</button></div>
+      <div class="mb">
+        <div><div class="mfl">案件名</div><input class="mfi mfi-lg" id="ep-name" value="${esc(pr.name)}"></div>
+        <div><div class="mfl">担当監督</div>
+          <select class="mfi" id="ep-sup">
+            <option value="">— 選択してください —</option>
+            ${DB.staff.filter(s=>s.role==='supervisor').map(s=>`<option value="${esc(s.name)}"${pr.supervisor===s.name?' selected':''}>${esc(s.name)}</option>`).join('')}
+            <option value="__other__"${pr.supervisor&&!DB.staff.find(s=>s.role==='supervisor'&&s.name===pr.supervisor)?' selected':''}>その他（直接入力）</option>
+          </select>
+          <input class="mfi" id="ep-sup-other" placeholder="担当監督の氏名"
+            style="margin-top:5px;display:${pr.supervisor&&!DB.staff.find(s=>s.role==='supervisor'&&s.name===pr.supervisor)?'block':'none'}"
+            value="${pr.supervisor&&!DB.staff.find(s=>s.role==='supervisor'&&s.name===pr.supervisor)?esc(pr.supervisor):''}">
+        </div>
+        <div><div class="mfl">図面（再取込）</div>
+          ${planDropHTML('ep-plan')}
+          <div id="ep-plan-st" style="margin-top:5px">${hasPlan?`<div style="font-size:10px;color:#34d399">✓ 図面設定済み（${pr.floorPlan.pages.length}ページ）</div>`:'<div style="font-size:10px;color:#334060">図面未設定</div>'}</div>
+        </div>
+      </div>
+      <div class="mf">
+        <button class="btn btn-ghost btn-sm" id="ep-cancel">キャンセル</button>
+        <button class="btn btn-blue btn-sm" id="ep-ok">保存</button>
+      </div>
+    </div>
+  </div>`;
+  const close=()=>{q('#mr').innerHTML='';};
+  q('#ep-x').addEventListener('click',close);q('#ep-cancel').addEventListener('click',close);
+  q('#ep-ov').addEventListener('click',e=>{if(e.target.id==='ep-ov')close();});
+  let pendingPlan=null;
+  bindPlanDrop('ep-plan','ep-plan-st',plan=>{pendingPlan=plan;});
+  q('#ep-sup').addEventListener('change',()=>{
+    const isOther=q('#ep-sup').value==='__other__';
+    q('#ep-sup-other').style.display=isOther?'block':'none';
+  });
+  q('#ep-ok').addEventListener('click',()=>{
+    const name=q('#ep-name').value.trim();
+    if(!name){showToast('案件名を入力してください');return;}
+    const supSel=q('#ep-sup').value;
+    const supervisor=supSel==='__other__'?q('#ep-sup-other').value.trim():supSel;
+    DB.projects=DB.projects.map(p=>p.id===id?{...p,name,supervisor,...(pendingPlan?{floorPlan:pendingPlan}:{})}:p);
+    saveDB();close();render();showToast('保存しました');
+  });
+}
+
+// ══════════════════════════════════════
+// STAFF DB
+// ══════════════════════════════════════
+function showStaffModal(){
+  const renderContent=()=>{
+    const list=DB.staff.map((s,i)=>`
+      <div class="staff-card">
+        <div class="staff-avatar" style="background:${AVATAR_COLORS[s.colorIdx%AVATAR_COLORS.length]}">${esc(s.name.charAt(0))}</div>
+        <div style="flex:1;min-width:0">
+          <div class="staff-name">${esc(s.name)}</div>
+          <div class="staff-role">${s.role==='supervisor'?'監督':'検査員'}</div>
+        </div>
+        <button class="staff-del" data-sid="${s.id}">×</button>
+      </div>`).join('');
+    return `<div class="mb">
+      ${list||'<div style="font-size:12px;color:#334060;text-align:center;padding:10px">社員が登録されていません</div>'}
+      <div style="border-top:1px solid #1e2d45;padding-top:10px">
+        <div class="mfl">新規追加</div>
+        <div style="display:flex;gap:6px;margin-bottom:6px">
+          <input class="mfi" id="sf-name" placeholder="氏名" style="flex:1">
+          <select class="mfi" id="sf-role" style="width:90px">
+            <option value="supervisor">監督</option>
+            <option value="inspector">検査員</option>
+          </select>
+        </div>
+        <button class="btn btn-blue btn-sm" id="sf-add" style="width:100%">追加</button>
+      </div>
+    </div>`;
+  };
+  q('#mr').innerHTML=`<div class="modal-ov" id="sf-ov">
+    <div class="modal">
+      <div class="mh"><div class="mh-title">👥 社員DB</div><button class="xbtn" id="sf-x">×</button></div>
+      <div id="sf-body">${renderContent()}</div>
+      <div class="mf"><button class="btn btn-ghost btn-sm" id="sf-close">閉じる</button></div>
+    </div>
+  </div>`;
+  const close=()=>{q('#mr').innerHTML='';};
+  const rebind=()=>{
+    q('#sf-body').innerHTML=renderContent();
+    q('#sf-add').addEventListener('click',()=>{
+      const name=q('#sf-name').value.trim();
+      if(!name){showToast('氏名を入力してください');return;}
+      DB.staff.push({id:uid(),name,role:q('#sf-role').value,colorIdx:DB.staff.length});
+      saveDB();rebind();
+    });
+    q('#sf-body').querySelectorAll('[data-sid]').forEach(b=>b.addEventListener('click',()=>{
+      DB.staff=DB.staff.filter(s=>s.id!==b.dataset.sid);saveDB();rebind();
+    }));
+  };
+  q('#sf-x').addEventListener('click',close);q('#sf-close').addEventListener('click',close);
+  q('#sf-ov').addEventListener('click',e=>{if(e.target.id==='sf-ov')close();});
+  rebind();
+}
+
+// ══════════════════════════════════════
+// PLAN UPLOAD (shared)
+// ══════════════════════════════════════
+function planDropHTML(baseId){
+  return `<div class="plan-drop" id="${baseId}-drop">
+    <input type="file" accept=".pdf,image/*" id="${baseId}-input">
+    <span class="plan-drop-icon">📐</span>
+    <div class="plan-drop-text">PDF または JPG / PNG をタップ・ドロップ</div>
+    <div class="plan-drop-hint">Googleドライブからダウンロードしたファイルも対応</div>
+  </div>`;
+}
+function bindPlanDrop(baseId,statusId,onDone){
+  const input=q(`#${baseId}-input`),drop=q(`#${baseId}-drop`);
+  if(!input)return;
+  const handle=async file=>{
+    const stEl=q(`#${statusId}`);
+    if(stEl)stEl.innerHTML=`<div class="plan-loading"><div class="plan-spinner"></div>読み込み中...</div>`;
+    try{
+      const plan=file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf')
+        ?await pdfToPages(file):{pages:[await fileToB64(file)],page:0};
+      if(stEl)stEl.innerHTML=`<img src="${plan.pages[0]}" class="plan-preview" alt="プレビュー">
+        <div class="plan-pages-info">✓ ${plan.pages.length}ページ取込完了</div>`;
+      onDone(plan);
+    }catch(err){
+      if(stEl)stEl.innerHTML=`<div style="font-size:10px;color:#f87171">読み込み失敗：${esc(err.message)}</div>`;
+    }
+  };
+  input.addEventListener('change',e=>{if(e.target.files[0])handle(e.target.files[0]);});
+  if(drop){
+    drop.addEventListener('dragover',e=>{e.preventDefault();drop.classList.add('drag');});
+    drop.addEventListener('dragleave',()=>drop.classList.remove('drag'));
+    drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('drag');if(e.dataTransfer.files[0])handle(e.dataTransfer.files[0]);});
+  }
+}
+async function pdfToPages(file){
+  const lib=await import('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs');
+  lib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.mjs';
+  const buf=await file.arrayBuffer();
+  const doc=await lib.getDocument({data:buf}).promise;
+  const pages=[];const oc=document.createElement('canvas');
+  for(let i=1;i<=doc.numPages;i++){
+    const pg=await doc.getPage(i);const vp=pg.getViewport({scale:2});
+    oc.width=vp.width;oc.height=vp.height;
+    const ctx=oc.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,vp.width,vp.height);
+    await pg.render({canvasContext:ctx,viewport:vp}).promise;
+    pages.push(oc.toDataURL('image/png',0.92));
+  }
+  return{pages,page:0};
+}
+function fileToB64(file){
+  return new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.onerror=()=>rej(new Error('読み込み失敗'));r.readAsDataURL(file);});
+}
+
+// ══════════════════════════════════════
+// INSPECT SCREEN DISPATCHER
+// ══════════════════════════════════════
+function renderInspect(){
+  const root=q('#sr');
+  // 検査員でセッション未開始ならスタート画面
+  if(UI.role==='inspector'&&!UI.inspectorId){
+    root.innerHTML=renderInspectorStart();bindInspectorStart();updateTopbar();return;
+  }
+  if(UI.tab==='plan')     {root.innerHTML=renderFloor();   bindFloor();}
+  else if(UI.tab==='assign'){root.innerHTML=renderAssign();  bindAssign();}
+  else if(UI.tab==='vendor'){root.innerHTML=renderVendorView();bindVendor();}
+
+  updateTopbar();
+}
+
+// ══════════════════════════════════════
+// INSPECTOR START SCREEN
+// ══════════════════════════════════════
+function renderInspectorStart(){
+  const inspectors=DB.staff.filter(s=>s.role==='inspector');
+  const pr=proj();
+  return `<div class="insp-start">
+    <div class="insp-start-icon">🔍</div>
+    <div class="insp-start-title">検査員として開始</div>
+    <div class="insp-start-sub">
+      案件：<strong style="color:#dde4f2">${esc(pr?.name||'')}</strong><br>
+      あなたの名前を選んでください。<br>
+      今回の検査で記録した指摘は、他の検査員の記録と<br>別々に保存されます。
+    </div>
+    ${inspectors.length?`<div class="member-select-grid" id="member-grid">
+      ${inspectors.map(s=>`<button class="member-btn" data-mid="${s.id}" data-mname="${esc(s.name)}">${esc(s.name)}</button>`).join('')}
+    </div>
+    <button class="btn btn-green" id="btn-insp-start" disabled>この名前で検査を開始</button>`
+    :`<div style="font-size:12px;color:#334060">社員DBに検査員が登録されていません。<br>一覧画面の「👥 社員DB管理」から追加してください。</div>
+    <button class="btn btn-ghost btn-sm" id="btn-go-home">← 一覧に戻る</button>`}
+  </div>`;
+}
+function bindInspectorStart(){
+  q('#btn-go-home')?.addEventListener('click',goHome);
+  let selId=null,selName=null;
+  q('#member-grid')?.querySelectorAll('.member-btn').forEach(b=>{
+    b.addEventListener('click',()=>{
+      selId=b.dataset.mid;selName=b.dataset.mname;
+      q('#member-grid').querySelectorAll('.member-btn').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+      const startBtn=q('#btn-insp-start');if(startBtn)startBtn.disabled=false;
+    });
+  });
+  q('#btn-insp-start')?.addEventListener('click',()=>{
+    if(!selId)return;
+    UI.inspectorId=selId;
+    UI.inspectorSessionPins=[];
+    renderInspect();
+  });
+}
+
+// ══════════════════════════════════════
+// FLOOR PLAN TAB
+// ══════════════════════════════════════
+function renderFloor(){
+  const pr=proj();if(!pr)return'';
+  const isI=UI.role==='inspector';
+  const sp=projPins();
+  const fp=pr.floorPlan;
+  const hasPlan=!!(fp?.pages?.length);
+  const curPage=fp?.page||0;
+  const totalPages=fp?.pages?.length||0;
+  const gOK=!!(pr.gate?.selfCheck&&pr.gate?.cleanPhoto);
+  const st=pr.status||ST.PREP;
+  const canI=gOK&&(st===ST.ACTIVE||st===ST.READY);
+  const uc=unassigned();
+  // 検査員のセッション内指摘IDセット
+  const sessIds=new Set(UI.inspectorSessionPins);
+
+  let h=`<div style="display:flex;flex-direction:column;height:100%;overflow:hidden">
+  <div class="sub-toolbar">`;
+  if(!isI){
+    h+=`<label class="btn btn-ghost btn-sm" style="cursor:pointer;position:relative;overflow:hidden">📐 図面取込
+      <input type="file" accept=".pdf,image/*" id="plan-up" style="position:absolute;inset:0;opacity:0;cursor:pointer"></label>
+    <button class="btn btn-ghost btn-sm" id="btn-gate">🔒 検査ゲート</button>`;
+    if(st===ST.READY) h+=`<button class="btn btn-green btn-sm" id="btn-start">▶ 検査開始</button>`;
+    if(st===ST.ACTIVE)h+=`<button class="btn btn-ghost btn-sm" id="btn-endinsp">✓ 完了</button>`;
+    h+=`<button class="btn btn-amber btn-sm" id="btn-export">📤 まとめ出力</button>`;
+    if(uc>0)h+=`<span style="font-size:10px;color:#fde68a;flex-shrink:0;margin-left:4px">⚠ 未割当 ${uc}件</span>`;
+  } else {
+    const insp=DB.staff.find(s=>s.id===UI.inspectorId);
+    h+=`<div style="font-size:10px;color:#34d399;font-weight:700;flex-shrink:0">🔍 ${esc(insp?.name||'検査員')}として記録中</div>`;
+    h+=`<span style="font-size:10px;color:#7a8eaa;flex-shrink:0">今回 ${UI.inspectorSessionPins.length}件</span>`;
+    if(!canI)h+=`<span style="font-size:10px;color:#fde68a;flex-shrink:0">🔒 ゲート通過待ち</span>`;
+    h+=`<button class="btn btn-ghost btn-sm" id="btn-insp-exit" style="margin-left:auto">セッション終了</button>`;
+  }
+  h+=`</div>`;
+  if(isI&&!canI)h+=`<div style="padding:6px 12px;background:#1a1505;border-bottom:1px solid #b45309;font-size:11px;color:#fde68a;font-weight:600;flex-shrink:0">🔒 監督が「検査開始」を押すまで記録できません</div>`;
+
+  h+=`<div class="canvas-wrap"><div id="canvas"${(!isI||canI)?'':' class="notap"'}>`;
+  if(hasPlan){
+    h+=`<img class="floor-img" src="${fp.pages[curPage]}" alt="図面">`;
+    if(totalPages>1)h+=`<div class="pdf-nav">
+      <button class="pnbtn" id="pg-prev" ${curPage===0?'disabled':''}>‹</button>
+      <div class="pninfo">${curPage+1}/${totalPages}</div>
+      <button class="pnbtn" id="pg-next" ${curPage>=totalPages-1?'disabled':''}>›</button>
+    </div>`;
+  } else {
+    h+=`<div class="grid-bg"></div><div class="no-plan-msg">
+      <div class="np-icon">📐</div>
+      <div class="np-text">${isI?'図面が設定されていません':'「図面取込」でPDF/画像をアップロード'}</div>
+      <div class="np-hint">${isI?'監督に図面の設定を依頼してください':'タップで即指摘登録されます'}</div>
+    </div>`;
+  }
+
+  // 監督：全ピン表示　検査員：自分のセッションのピンのみ表示
+  const displayPins=isI?sp.filter(p=>sessIds.has(p.id)):sp;
+  h+=displayPins.map(pin=>{
+    const ua=!pin.vendor&&!pin.done;
+    const fromInsp=!!pin.inspectorId;
+    return `<div class="pin" data-pid="${esc(pin.id)}" style="left:${pin.x}%;top:${pin.y}%">
+      <div class="pin-mk" style="background:${pin.done?'#15803d':pinBg(pin.sev)}">
+        ${pin.photos?.length>0&&!pin.done?'<div class="pin-photo-ring"></div><div class="pin-photo-dot"></div>':''}
+        ${ua&&!isI?'<div class="pin-ua"></div>':''}
+        ${fromInsp&&!isI?'<div class="pin-insp"></div>':''}
+        <span class="pin-in">${pin.done?'✓':'-'+(SEV_MAP[pin.sev]?.pts||1)}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  if(!isI||canI)h+=`<div class="cv-hint">図面をタップ → 即指摘登録</div>`;
+  h+=`<div class="zoom-badge" id="zoom-badge">×1.0</div>`;
+  h+=`</div></div></div>`;
+  return h;
+}
+
+function bindFloor(){
+  const pr=proj();if(!pr)return;
+  const isI=UI.role==='inspector';
+  const gOK=!!(pr.gate?.selfCheck&&pr.gate?.cleanPhoto);
+  const st=pr.status||ST.PREP;
+  const canI=gOK&&(st===ST.ACTIVE||st===ST.READY);
+
+  q('#plan-up')?.addEventListener('change',async e=>{
+    const f=e.target.files[0];if(!f)return;
+    showToast('図面を読み込んでいます...');
+    try{
+      const plan=f.type==='application/pdf'||f.name.toLowerCase().endsWith('.pdf')
+        ?await pdfToPages(f):{pages:[await fileToB64(f)],page:0};
+      DB.projects=DB.projects.map(p=>p.id===UI.projectId?{...p,floorPlan:plan}:p);
+      saveDB();render();showToast(`取込完了（${plan.pages.length}ページ）`);
+    }catch(e){showToast('読み込みに失敗しました');}
+  });
+  q('#btn-gate')?.addEventListener('click',showGateModal);
+  q('#btn-start')?.addEventListener('click',()=>{
+    if(!gOK){showToast('検査ゲートを完了してください');return;}
+    DB.projects=DB.projects.map(p=>p.id===UI.projectId?{...p,status:ST.ACTIVE}:p);
+    saveDB();render();showToast('検査を開始しました');
+  });
+  q('#btn-endinsp')?.addEventListener('click',()=>{
+    DB.projects=DB.projects.map(p=>p.id===UI.projectId?{...p,status:ST.DONE}:p);
+    saveDB();render();showToast('検査を完了しました');
+  });
+  q('#btn-export')?.addEventListener('click',showExportModal);
+  q('#btn-insp-exit')?.addEventListener('click',()=>{
+    UI.inspectorId=null;UI.inspectorSessionPins=[];renderInspect();
+  });
+  q('#pg-prev')?.addEventListener('click',()=>{
+    DB.projects=DB.projects.map(p=>{if(p.id!==UI.projectId)return p;return{...p,floorPlan:{...p.floorPlan,page:Math.max(0,(p.floorPlan.page||0)-1)}};});render();
+  });
+  q('#pg-next')?.addEventListener('click',()=>{
+    DB.projects=DB.projects.map(p=>{if(p.id!==UI.projectId)return p;const fp=p.floorPlan;return{...p,floorPlan:{...fp,page:Math.min(fp.pages.length-1,(fp.page||0)+1)}};});render();
+  });
+
+  // ── ズーム / パン ──────────────────────────────────────────
+  initCanvasZoom();
+
+  const canvas=q('#canvas');
+  if(canvas&&(!isI||canI)){
+    canvas.addEventListener('click',e=>{
+      if(e.target.closest('.pin,.pdf-nav'))return;
+      // ドラッグ操作後はタップ扱いしない
+      const wrap=document.querySelector('.canvas-wrap');
+      if(wrap?._didDrag?.())return;
+      // ズームのtransformを逆算して図面上の相対座標を求める
+      const wrap2=document.querySelector('.canvas-wrap');
+      const wRect=wrap2.getBoundingClientRect();
+      const style=canvas.style.transform||'';
+      const mScale=parseFloat((style.match(/scale\(([^)]+)\)/)||[,'1'])[1])||1;
+      const mTx=parseFloat((style.match(/translate\(([^,]+)px/)||[,'0'])[1])||0;
+      const mTy=parseFloat((style.match(/translate\([^,]+,([^p]+)px/)||[,'0'])[1])||0;
+      const localX=((e.clientX-wRect.left)-mTx)/mScale;
+      const localY=((e.clientY-wRect.top)-mTy)/mScale;
+      const x=(localX/wRect.width)*100;
+      const y=(localY/wRect.height)*100;
+      const insp=isI?DB.staff.find(s=>s.id===UI.inspectorId):null;
+      UI.inspModal={isNew:true,id:'',projectId:UI.projectId,x,y,text:'',sev:'dam',
+        vendor:isI?null:null,  // 監督も検査員も最初は未割当
+        done:false,photos:[],
+        inspectorId:isI?UI.inspectorId:null,
+        inspectorName:isI?insp?.name||null:null};
+      showInspModal();
+    });
+    canvas.querySelectorAll('.pin').forEach(el=>{
+      el.addEventListener('click',e=>{
+        e.stopPropagation();
+        const pin=DB.pins.find(p=>p.id===el.dataset.pid);
+        if(!pin)return;
+        // 検査員は自分のセッションのピンのみ編集可
+        if(isI&&!UI.inspectorSessionPins.includes(pin.id)){showToast('他の検査員の指摘は編集できません');return;}
+        UI.inspModal={...pin,isNew:false};
+        showInspModal();
+      });
+    });
+  }
+}
+
+// ══════════════════════════════════════
+// CANVAS ZOOM / PAN
+// ══════════════════════════════════════
+function initCanvasZoom(){
+  const wrap=document.querySelector('.canvas-wrap');
+  const canvas=q('#canvas');
+  if(!wrap||!canvas)return;
+
+  let scale=1,tx=0,ty=0;
+  let lastDist=null,lastMx=0,lastMy=0;
+  let isPanning=false,startX=0,startY=0,startTx=0,startTy=0;
+  let didDrag=false;
+  let zoomTm=null;
+
+  const MIN=1, MAX=8;
+  const clamp=(v,mn,mx)=>Math.min(Math.max(v,mn),mx);
+
+  function applyTransform(animate){
+    // 境界チェック：スケール1未満なら中央固定
+    if(scale<=1){tx=0;ty=0;}else{
+      const ww=wrap.offsetWidth, wh=wrap.offsetHeight;
+      const maxTx=0, minTx=ww*(1-scale);
+      const maxTy=0, minTy=wh*(1-scale);
+      tx=clamp(tx,minTx,maxTx);
+      ty=clamp(ty,minTy,maxTy);
+    }
+    canvas.style.transition=animate?'transform .15s ease':'none';
+    canvas.style.transform=`translate(${tx}px,${ty}px) scale(${scale})`;
+    // ズームバッジ
+    const badge=q('#zoom-badge');
+    if(badge){
+      badge.textContent='×'+scale.toFixed(1);
+      badge.classList.toggle('visible',scale>1.05);
+      clearTimeout(zoomTm);
+      if(scale>1.05) zoomTm=setTimeout(()=>badge.classList.remove('visible'),1500);
+    }
+    // ピンのクリック領域調整：scale>1 なら pointer-events を canvas 側に委ねる
+    canvas.querySelectorAll('.pin').forEach(p=>{p.style.pointerEvents=scale>1?'auto':'auto';});
+  }
+
+  function zoomAt(cx,cy,factor){
+    const newScale=clamp(scale*factor,MIN,MAX);
+    if(newScale===scale)return;
+    // ズーム中心点を基準にtx,ty補正
+    tx=cx-(cx-tx)*(newScale/scale);
+    ty=cy-(cy-ty)*(newScale/scale);
+    scale=newScale;
+    applyTransform(false);
+  }
+
+  // ── マウスホイール ──
+  wrap.addEventListener('wheel',e=>{
+    e.preventDefault();
+    const r=wrap.getBoundingClientRect();
+    const cx=e.clientX-r.left, cy=e.clientY-r.top;
+    zoomAt(cx,cy,e.deltaY<0?1.15:1/1.15);
+  },{passive:false});
+
+  // ── タッチ：ピンチ & パン ──
+  wrap.addEventListener('touchstart',e=>{
+    if(e.touches.length===2){
+      // ピンチ開始
+      const [t1,t2]=e.touches;
+      lastDist=Math.hypot(t2.clientX-t1.clientX,t2.clientY-t1.clientY);
+      lastMx=(t1.clientX+t2.clientX)/2;
+      lastMy=(t1.clientY+t2.clientY)/2;
+      isPanning=false;
+    } else if(e.touches.length===1&&scale>1){
+      // 1本指でパン（ズーム中のみ）
+      isPanning=true; didDrag=false;
+      startX=e.touches[0].clientX; startY=e.touches[0].clientY;
+      startTx=tx; startTy=ty;
+    }
+  },{passive:true});
+
+  wrap.addEventListener('touchmove',e=>{
+    if(e.touches.length===2){
+      e.preventDefault();
+      const [t1,t2]=e.touches;
+      const dist=Math.hypot(t2.clientX-t1.clientX,t2.clientY-t1.clientY);
+      const mx=(t1.clientX+t2.clientX)/2;
+      const my=(t1.clientY+t2.clientY)/2;
+      const r=wrap.getBoundingClientRect();
+      if(lastDist){
+        zoomAt(mx-r.left,my-r.top,dist/lastDist);
+        // パン
+        tx+=mx-lastMx; ty+=my-lastMy;
+        applyTransform(false);
+      }
+      lastDist=dist; lastMx=mx; lastMy=my;
+    } else if(isPanning&&e.touches.length===1){
+      e.preventDefault();
+      const dx=e.touches[0].clientX-startX;
+      const dy=e.touches[0].clientY-startY;
+      if(Math.abs(dx)>4||Math.abs(dy)>4) didDrag=true;
+      tx=startTx+dx; ty=startTy+dy;
+      applyTransform(false);
+    }
+  },{passive:false});
+
+  wrap.addEventListener('touchend',e=>{
+    if(e.touches.length<2) lastDist=null;
+    if(e.touches.length===0) isPanning=false;
+  },{passive:true});
+
+  // ── マウスドラッグ（ズーム中のみ）──
+  wrap.addEventListener('mousedown',e=>{
+    if(scale<=1||e.button!==0)return;
+    if(e.target.closest('.pin,.pdf-nav,.zoom-badge,.cv-hint,.sub-toolbar'))return;
+    isPanning=true; didDrag=false;
+    startX=e.clientX; startY=e.clientY; startTx=tx; startTy=ty;
+    canvas.classList.add('dragging');
+    e.preventDefault();
+  });
+  window.addEventListener('mousemove',e=>{
+    if(!isPanning)return;
+    const dx=e.clientX-startX, dy=e.clientY-startY;
+    if(Math.abs(dx)>3||Math.abs(dy)>3) didDrag=true;
+    tx=startTx+dx; ty=startTy+dy;
+    applyTransform(false);
+  });
+  window.addEventListener('mouseup',()=>{
+    if(!isPanning)return;
+    isPanning=false;
+    canvas.classList.remove('dragging');
+  });
+
+  // ── canvas click: ドラッグ後は発火させない ──
+  // didDrag フラグは canvas click listener 内で参照させる
+  // グローバルに expose
+  wrap._didDrag=()=>didDrag;
+
+  // ── ダブルタップ/ダブルクリックでリセット ──
+  let lastTap=0;
+  wrap.addEventListener('dblclick',()=>{scale=1;tx=0;ty=0;applyTransform(true);});
+  wrap.addEventListener('touchend',e=>{
+    if(e.touches.length>0)return;
+    const now=Date.now();
+    if(now-lastTap<300){scale=1;tx=0;ty=0;applyTransform(true);}
+    lastTap=now;
+  },{passive:true});
+
+  applyTransform(false);
+}
+
+// ══════════════════════════════════════
+// INSPECTION MODAL (full-screen)
+// ══════════════════════════════════════
+let F={};
+let presetOpen=false;
+
+function showInspModal(){
+  F={...UI.inspModal};
+  const isI=UI.role==='inspector';
+  const photos=F.photos||[];
+  const sevBtns=SEVS.map(s=>`<button class="sv sv-${s.key}${F.sev===s.key?' on':''}" data-sev="${s.key}">
+    ${esc(s.label)}<br><span style="font-size:8px;opacity:.7">${esc(s.sub)}</span><br>
+    <span style="font-size:9px">-${s.pts}点</span></button>`).join('');
+
+  q('#mr').innerHTML=`<div class="insp-modal-ov" id="im-ov">
+    <div class="insp-modal">
+      <div class="im-handle"></div>
+      <div class="im-header">
+        <div>
+          <div class="im-title">${F.isNew?'📍 新規指摘':'✏️ 指摘編集'}</div>
+          <div class="im-role-badge ${isI?'rb-ins':'rb-sup'}">${isI?`🔍 ${esc(DB.staff.find(s=>s.id===UI.inspectorId)?.name||'検査員')}`:'🏢 監督'}</div>
+        </div>
+        <button class="xbtn" id="im-x">×</button>
+      </div>
+      <div class="im-body">
+        <!-- preset accordion -->
+        <div class="preset-toggle" id="preset-toggle">
+          プリセット
+          <span class="preset-toggle-arrow" id="preset-arrow">▾</span>
+        </div>
+        <div class="preset-body" id="preset-body">
+          <div class="preset-inner">${(isI?PRESETS_I:PRESETS_S).map(p=>`<button class="chip prc" data-val="${esc(p)}">${esc(p)}</button>`).join('')}</div>
+        </div>
+        <div class="fg">
+          <div class="fl">指摘内容 <span class="fl-req">必須</span></div>
+          <textarea class="fi fi-ta" id="ft" placeholder="例：クロスに擦り傷あり">${esc(F.text||'')}</textarea>
+        </div>
+        <div class="fg">
+          <div class="fl">重要度（減点）</div>
+          <div class="sev-row">${sevBtns}</div>
+        </div>
+        <div class="fg">
+          <div class="fl">現場写真${photos.length?` (${photos.length}枚)`:''}</div>
+          <div class="pdrop" id="pdrop">
+            <input type="file" accept="image/*" multiple capture="environment" id="pi">
+            <span class="pdrop-icon">📷</span>
+            <div class="pdrop-text">タップで写真追加（スマホはカメラ起動）</div>
+            <div class="pdrop-hint">最大6枚</div>
+          </div>
+          <div class="pgrid" id="pgrid">${photos.map((s,i)=>`
+            <div class="pthumb"><img src="${s}" alt="写真${i+1}"><span class="plbl">写真${i+1}</span>
+            <button class="pdel" data-i="${i}">×</button></div>`).join('')}</div>
+        </div>
+        ${!F.isNew?`<div class="fg">
+          <div class="fl">ステータス</div>
+          <div class="chips">
+            <button class="chip${!F.done?' on':''}" id="st-o">未対応</button>
+            <button class="chip${F.done?' don':''}" id="st-d">✓ 対応済</button>
+          </div>
+        </div>`:''}
+      </div>
+      <div class="im-footer">
+        <button class="btn-full bfb" id="im-save">${F.isNew?'指摘を登録':'更新'}</button>
+        ${!F.isNew?`<button class="btn-full bfr" id="im-del">削除</button>`:''}
+      </div>
+    </div>
+  </div>`;
+
+  // preset accordion
+  presetOpen=false;
+  q('#preset-toggle').addEventListener('click',()=>{
+    presetOpen=!presetOpen;
+    q('#preset-body').classList.toggle('open',presetOpen);
+    q('#preset-arrow').classList.toggle('open',presetOpen);
+  });
+  q('#mr').querySelectorAll('.prc').forEach(b=>b.addEventListener('click',()=>{
+    F.text=b.dataset.val;const ta=q('#ft');if(ta)ta.value=F.text;
+  }));
+  q('#ft').addEventListener('input',e=>{F.text=e.target.value;});
+  q('#mr').querySelectorAll('.sv').forEach(b=>b.addEventListener('click',()=>{
+    F.sev=b.dataset.sev;q('#mr').querySelectorAll('.sv').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+  }));
+  q('#st-o')?.addEventListener('click',()=>{F.done=false;q('#st-o').className='chip on';q('#st-d').className='chip';});
+  q('#st-d')?.addEventListener('click',()=>{F.done=true;q('#st-o').className='chip';q('#st-d').className='chip don';});
+  const pi=q('#pi'),pd=q('#pdrop');
+  if(pi)pi.addEventListener('change',()=>addPhotos(pi.files));
+  if(pd){
+    pd.addEventListener('dragover',e=>{e.preventDefault();pd.classList.add('drag');});
+    pd.addEventListener('dragleave',()=>pd.classList.remove('drag'));
+    pd.addEventListener('drop',e=>{e.preventDefault();pd.classList.remove('drag');addPhotos(e.dataTransfer.files);});
+  }
+  q('#mr').querySelectorAll('.pdel').forEach(b=>b.addEventListener('click',()=>{
+    F.photos=(F.photos||[]).filter((_,j)=>j!==+b.dataset.i);refreshPGrid();
+  }));
+  const closeModal=()=>{q('#mr').innerHTML='';UI.inspModal=null;};
+  q('#im-x').addEventListener('click',closeModal);
+  q('#im-ov').addEventListener('click',e=>{if(e.target.id==='im-ov')closeModal();});
+  q('#im-save').addEventListener('click',()=>{
+    if(!F.text?.trim()){showToast('指摘内容を入力してください');return;}
+    if(F.isNew){
+      const newPin={...F,id:uid(),isNew:undefined};
+      DB.pins.push(newPin);
+      if(UI.role==='inspector')UI.inspectorSessionPins.push(newPin.id);
+      showToast('指摘を登録しました');
+    }else{
+      DB.pins=DB.pins.map(p=>p.id===F.id?{...F,isNew:undefined}:p);
+      showToast('更新しました');
+    }
+    UI.inspModal=null;saveDB();closeModal();renderInspect();
+  });
+  q('#im-del')?.addEventListener('click',()=>{
+    DB.pins=DB.pins.filter(p=>p.id!==F.id);
+    if(UI.role==='inspector')UI.inspectorSessionPins=UI.inspectorSessionPins.filter(id=>id!==F.id);
+    UI.inspModal=null;showToast('削除しました');saveDB();closeModal();renderInspect();
+  });
+}
+function addPhotos(files){
+  [...files].slice(0,4).forEach(f=>{
+    if(!f.type.startsWith('image/')){showToast('画像ファイルのみ対応');return;}
+    const r=new FileReader();
+    r.onload=e=>{F.photos=[...(F.photos||[]),e.target.result].slice(0,6);refreshPGrid();};
+    r.readAsDataURL(f);
+  });
+}
+function refreshPGrid(){
+  const g=q('#pgrid');if(!g)return;
+  g.innerHTML=(F.photos||[]).map((s,i)=>`
+    <div class="pthumb"><img src="${s}" alt="写真${i+1}"><span class="plbl">写真${i+1}</span>
+    <button class="pdel" data-i="${i}">×</button></div>`).join('');
+  g.querySelectorAll('.pdel').forEach(b=>b.addEventListener('click',()=>{
+    F.photos=(F.photos||[]).filter((_,j)=>j!==+b.dataset.i);refreshPGrid();
+  }));
+}
+
+// ══════════════════════════════════════
+// GATE MODAL
+// ══════════════════════════════════════
+function showGateModal(){
+  const pr=proj();if(!pr)return;
+  const g=pr.gate||{};const d1=!!g.selfCheck,d2=!!g.cleanPhoto;const pct=d1&&d2?100:d1||d2?50:0;
+  q('#mr').innerHTML=`<div class="modal-ov" id="gov">
+    <div class="modal">
+      <div class="mh"><div class="mh-title">🔒 検査ゲート — ${esc(pr.name)}</div><button class="xbtn" id="gx">×</button></div>
+      <div class="mb">
+        <div class="mbar-wrap"><div class="mbar-fill" style="width:${pct}%"></div></div>
+        <div style="font-size:9px;color:#334060;text-align:right;margin-top:2px">${pct}% 完了</div>
+        <div class="gate-item">
+          <div class="gcheck${d1?' done':''}">${d1?'✓':''}</div>
+          <div><div class="gate-lbl">① 自主検査チェック</div>
+          <div class="gate-desc">監督が全体を点検し、自主指摘を登録済みであることを確認</div>
+          ${!d1?`<button class="gate-ubtn" id="gc1">✓ 自主検査完了を確認</button>`:`<div style="font-size:10px;color:#34d399;margin-top:4px">✓ 確認済み</div>`}</div>
+        </div>
+        <div class="gate-item">
+          <div class="gcheck${d2?' done':''}">${d2?'✓':''}</div>
+          <div><div class="gate-lbl">② 現場清掃写真</div>
+          <div class="gate-desc">検査前の清掃完了状態の写真をアップロード</div>
+          <label class="gate-ubtn">📷 清掃写真をアップロード
+            <input type="file" accept="image/*" capture="environment" id="gc2in" style="position:absolute;inset:0;opacity:0;cursor:pointer">
+          </label>
+          ${d2?`<img src="${esc(g.cleanPhoto)}" class="gate-prev" alt="清掃写真">`:''}
+          </div>
+        </div>
+      </div>
+      <div class="mf">
+        <button class="btn btn-ghost btn-sm" id="gcancl">キャンセル</button>
+        <button class="btn btn-green btn-sm" id="gcok" ${d1&&d2?'':'disabled'}>✓ ゲートを開放</button>
+      </div>
+    </div>
+  </div>`;
+  const close=()=>{q('#mr').innerHTML='';};
+  q('#gx').addEventListener('click',close);q('#gcancl').addEventListener('click',close);
+  q('#gov').addEventListener('click',e=>{if(e.target.id==='gov')close();});
+  q('#gc1')?.addEventListener('click',()=>{
+    DB.projects=DB.projects.map(p=>p.id===UI.projectId?{...p,gate:{...p.gate||{},selfCheck:true}}:p);
+    saveDB();showGateModal();
+  });
+  q('#gc2in')?.addEventListener('change',e=>{
+    const f=e.target.files[0];if(!f)return;
+    fileToB64(f).then(b64=>{
+      DB.projects=DB.projects.map(p=>p.id===UI.projectId?{...p,gate:{...p.gate||{},cleanPhoto:b64}}:p);
+      saveDB();showGateModal();
+    });
+  });
+  q('#gcok')?.addEventListener('click',()=>{
+    const g2=proj()?.gate||{};if(!g2.selfCheck||!g2.cleanPhoto){showToast('条件を満たしていません');return;}
+    DB.projects=DB.projects.map(p=>p.id===UI.projectId?{...p,status:ST.READY}:p);
+    saveDB();close();render();showToast('ゲートを開放しました。「検査開始」を押してください。');
+  });
+}
+
+// ══════════════════════════════════════
+// EXPORT MODAL
+// ══════════════════════════════════════
+function showExportModal(){
+  const pr=proj();if(!pr)return;
+  const sp=projPins();const sc=calcScore(sp);
+  const active=sp.filter(p=>!p.done);const done=sp.filter(p=>p.done);const uc=active.filter(p=>!p.vendor);
+  const today=new Date().toLocaleDateString('ja-JP');
+  const genSummary=()=>{
+    let t=`■ 品質検査報告書\n案件名：${pr.name}\n作成日：${today}\nスコア：${sc}点\n未対応：${active.length}件 / 対応済：${done.length}件\n\n─── 指摘一覧 ───\n\n`;
+    active.forEach((p,i)=>{t+=`No.${i+1} [${SEVS.find(s=>s.key===p.sev)?.label||p.sev}] ${p.text}\n  担当：${p.vendor||'未割当'} / 写真：${p.photos?.length||0}枚${p.inspectorName?` / 記録：${p.inspectorName}`:''}\n\n`;});
+    if(uc.length)t+=`⚠ 未割当指摘が${uc.length}件あります。\n`;return t;
+  };
+  const genVendor=()=>{
+    let t=`■ 業者別指示書 — ${pr.name}（${today}）\n\n`;
+    VENDORS.forEach(v=>{const vp=active.filter(p=>p.vendor===v);if(!vp.length)return;t+=`【${v}】${vp.length}件\n`;vp.forEach((p,i)=>{t+=`  ${i+1}. ${p.text}（写真${p.photos?.length||0}枚）\n`;});t+='\n';});
+    if(uc.length){t+=`【未割当】${uc.length}件\n`;uc.forEach((p,i)=>{t+=`  ${i+1}. ${p.text}\n`;});}return t;
+  };
+  const genJSON=()=>JSON.stringify({meta:{project:pr.name,date:today,score:sc},pins:active.map(p=>({text:p.text,sev:SEVS.find(s=>s.key===p.sev)?.label,deduction:SEV_MAP[p.sev]?.pts,vendor:p.vendor||null,inspector:p.inspectorName||null,photos:p.photos?.length||0,x:Math.round(p.x),y:Math.round(p.y)}))},null,2);
+  q('#mr').innerHTML=`<div class="modal-ov" id="exp-ov">
+    <div class="modal">
+      <div class="mh"><div class="mh-title">📤 まとめ出力 — ${esc(pr.name)}</div><button class="xbtn" id="ex">×</button></div>
+      <div class="mb">
+        <div style="background:#07090f;border:1px solid #1e2d45;border-radius:6px;padding:9px;font-size:11px;display:flex;flex-direction:column;gap:4px">
+          <div style="display:flex;justify-content:space-between"><span style="color:#334060">スコア</span><strong style="color:${scColor(sc)}">${sc}点</strong></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:#334060">未対応</span><strong>${active.length}件</strong></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:#334060">未割当</span><strong style="color:${uc.length?'#fde68a':'#4ade80'}">${uc.length}件</strong></div>
+        </div>
+        <div style="background:#07090f;border:1px solid #1e2d45;border-radius:7px;padding:9px 11px;cursor:pointer" id="ec1"><div style="font-size:12px;font-weight:700;color:#dde4f2;margin-bottom:2px">📋 品質検査報告書</div><div style="font-size:10px;color:#334060">社長・顧客への提出用</div></div>
+        <div style="background:#07090f;border:1px solid #1e2d45;border-radius:7px;padding:9px 11px;cursor:pointer" id="ec2"><div style="font-size:12px;font-weight:700;color:#dde4f2;margin-bottom:2px">🏷 業者別指示書</div><div style="font-size:10px;color:#334060">業者への一斉送付用</div></div>
+        <div style="background:#07090f;border:1px solid #1e2d45;border-radius:7px;padding:9px 11px;cursor:pointer" id="ec3"><div style="font-size:12px;font-weight:700;color:#dde4f2;margin-bottom:2px">🗂 全データ JSON</div><div style="font-size:10px;color:#334060">バックアップ・システム連携用</div></div>
+        <div id="ep-wrap" style="display:none">
+          <textarea style="width:100%;min-height:160px;padding:9px;background:#07090f;border:1px solid #1e2d45;border-radius:6px;color:#dde4f2;font-size:11px;font-family:Consolas,monospace;outline:none;resize:vertical" id="eta" readonly></textarea>
+          <button class="btn btn-blue btn-sm" id="ecopy" style="width:100%;margin-top:5px">📋 クリップボードにコピー</button>
+        </div>
+      </div>
+      <div class="mf"><button class="btn btn-ghost btn-sm" id="ecancl">閉じる</button></div>
+    </div>
+  </div>`;
+  const close=()=>{q('#mr').innerHTML='';};
+  q('#ex').addEventListener('click',close);q('#ecancl').addEventListener('click',close);
+  q('#exp-ov').addEventListener('click',e=>{if(e.target.id==='exp-ov')close();});
+  const show=t=>{q('#ep-wrap').style.display='block';q('#eta').value=t;};
+  q('#ec1').addEventListener('click',()=>show(genSummary()));
+  q('#ec2').addEventListener('click',()=>show(genVendor()));
+  q('#ec3').addEventListener('click',()=>show(genJSON()));
+  q('#ecopy')?.addEventListener('click',()=>{const ta=q('#eta');if(!ta)return;navigator.clipboard.writeText(ta.value).then(()=>showToast('コピーしました')).catch(()=>{ta.select();document.execCommand('copy');showToast('コピーしました');});});
+}
+
+// ══════════════════════════════════════
+// ASSIGN VIEW（監督専用）
+// ══════════════════════════════════════
+// チェック済みIDセット（画面をまたいで保持）
+let assignChecked=new Set();
+
+function renderAssign(){
+  const sp=projPins();
+  const active=sp.filter(p=>!p.done);
+  const ua=active.filter(p=>!p.vendor);
+  const asgn=active.filter(p=>p.vendor);
+  const tot=active.length;
+  const pct=tot?Math.round(asgn.length/tot*100):100;
+  const allDone=ua.length===0&&tot>0;
+  // 存在しないIDをclean
+  assignChecked=new Set([...assignChecked].filter(id=>ua.some(p=>p.id===id)));
+
+  let h=`<div style="display:flex;flex-direction:column;height:100%;overflow:hidden">
+  <div class="av-prog">
+    <span style="flex-shrink:0">割当進捗 ${asgn.length}/${tot}件</span>
+    <div class="prog-track"><div class="prog-fill" style="width:${pct}%"></div></div>
+    <span style="font-weight:700;color:${allDone?'#4ade80':'#f87171'}">${pct}%</span>
+  </div>`;
+
+  // ── 一括操作バー（未割当がある場合のみ）──
+  if(ua.length>0){
+    const chkAll=assignChecked.size===ua.length;
+    h+=`<div style="padding:6px 10px;background:#0a1018;border-bottom:1px solid #1e2d45;display:flex;align-items:center;gap:8px;flex-shrink:0">
+      <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:#7a8eaa;flex-shrink:0">
+        <input type="checkbox" id="chk-all" ${chkAll?'checked':''} style="width:14px;height:14px;cursor:pointer">
+        全選択（${ua.length}件）
+      </label>
+      ${assignChecked.size>0?`
+      <span style="font-size:11px;color:#60a5fa;font-weight:700;flex-shrink:0">${assignChecked.size}件選択中</span>
+      <select id="bulk-sel" style="flex:1;padding:4px 8px;background:#07090f;border:1px solid #1e2d45;border-radius:5px;color:#dde4f2;font-size:11px;outline:none;max-width:140px">
+        <option value="">業者を選択…</option>
+        ${VENDORS.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('')}
+      </select>
+      <button class="btn btn-blue btn-sm" id="bulk-assign">一括割当</button>`:''}
+    </div>`;
+  }
+
+  h+=`<div class="scroll-view">`;
+
+  // ── 未割当リスト ──
+  if(ua.length===0&&tot>0){
+    h+=`<div style="padding:16px;text-align:center;color:#34d399;font-size:13px;font-weight:700">✅ 全指摘の割り当てが完了しています</div>`;
+  } else if(tot===0){
+    h+=`<div style="padding:16px;text-align:center;color:#334060;font-size:12px">指摘がありません</div>`;
+  }
+
+  if(ua.length>0){
+    h+=`<div style="font-size:9px;color:#334060;padding:6px 10px 2px;font-weight:700;letter-spacing:.06em;text-transform:uppercase">未割当 ${ua.length}件</div>`;
+  }
+
+  ua.forEach(pin=>{
+    const photo=pin.photos?.[0];
+    const si=SEVS.find(s=>s.key===pin.sev);
+    const checked=assignChecked.has(pin.id);
+    h+=`<div class="acard${checked?' acard-checked':''}" data-aid="${esc(pin.id)}" style="${checked?'border-color:#2563eb;background:#0a1630;':''}">
+      <label style="display:flex;align-items:center;justify-content:center;width:32px;flex-shrink:0;cursor:pointer;padding:0 4px">
+        <input type="checkbox" class="pin-chk" data-cid="${esc(pin.id)}" ${checked?'checked':''} style="width:16px;height:16px;cursor:pointer">
+      </label>
+      <div style="display:flex;flex-direction:column;flex-shrink:0">
+        <div class="acard-map"><div class="amg"></div>
+          <div style="position:absolute;left:${pin.x}%;top:${pin.y}%;transform:translate(-50%,-50%)">
+            <div style="width:8px;height:8px;border-radius:50%;background:${pinBg(pin.sev)};border:1.5px solid rgba(255,255,255,.3)"></div>
+          </div>
+        </div>
+        ${photo?`<img src="${photo}" class="acard-photo" alt="写真">`:`<div class="acard-nophoto">📷<span>なし</span></div>`}
+      </div>
+      <div class="acard-r">
+        <div class="acard-text">${esc(pin.text)}</div>
+        <div class="atags">
+          <span class="tag" style="background:${(si?.color||'#666')+'22'};color:${si?.color||'#999'}">-${si?.pts??'?'}点</span>
+          <span class="tag tw">⚠ 未割当</span>
+          ${pin.inspectorName?`<span class="inspector-tag">🔍${esc(pin.inspectorName)}</span>`:''}
+        </div>
+        <div class="asel-row">
+          <select class="asel" data-ps="${esc(pin.id)}">
+            <option value="">業者を選択…</option>
+            ${VENDORS.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('')}
+          </select>
+          <button class="asave" data-pb="${esc(pin.id)}">割当</button>
+        </div>
+      </div>
+    </div>`;
+  });
+
+  // ── 割当済みリスト（編集可）──
+  if(asgn.length>0){
+    h+=`<div style="font-size:9px;color:#334060;padding:10px 10px 2px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-top:1px solid #1e2d45;margin-top:4px">割当済み ${asgn.length}件（タップで変更）</div>`;
+    asgn.forEach(pin=>{
+      const si=SEVS.find(s=>s.key===pin.sev);
+      h+=`<div class="acard" style="opacity:.75" data-edit-pin="${esc(pin.id)}">
+        <div style="display:flex;flex-direction:column;flex-shrink:0">
+          <div class="acard-map"><div class="amg"></div>
+            <div style="position:absolute;left:${pin.x}%;top:${pin.y}%;transform:translate(-50%,-50%)">
+              <div style="width:8px;height:8px;border-radius:50%;background:${pinBg(pin.sev)};border:1.5px solid rgba(255,255,255,.3)"></div>
+            </div>
+          </div>
+        </div>
+        <div class="acard-r">
+          <div class="acard-text">${esc(pin.text)}</div>
+          <div class="atags">
+            <span class="tag" style="background:${(si?.color||'#666')+'22'};color:${si?.color||'#999'}">-${si?.pts??'?'}点</span>
+            ${pin.inspectorName?`<span class="inspector-tag">🔍${esc(pin.inspectorName)}</span>`:''}
+          </div>
+          <div class="asel-row">
+            <select class="asel" data-ps="${esc(pin.id)}">
+              ${VENDORS.map(v=>`<option value="${esc(v)}"${pin.vendor===v?' selected':''}>${esc(v)}</option>`).join('')}
+            </select>
+            <button class="asave" data-pb="${esc(pin.id)}">変更</button>
+          </div>
+        </div>
+      </div>`;
+    });
+  }
+
+  h+=`</div>`;
+  if(allDone){
+    h+=`<div class="send-bar">
+      <div class="send-bar-text">✅ 全割当完了 — 指示書タブで確認・送付できます</div>
+      <button class="btn btn-blue btn-sm" id="btn-go-vendor">指示書へ →</button>
+    </div>`;
+  }
+  h+=`</div>`;
+  return h;
+}
+
+function bindAssign(){
+  // 個別チェックボックス
+  document.querySelectorAll('.pin-chk').forEach(cb=>{
+    cb.addEventListener('change',()=>{
+      const id=cb.dataset.cid;
+      if(cb.checked) assignChecked.add(id);
+      else assignChecked.delete(id);
+      renderAssignInPlace();
+    });
+  });
+
+  // 全選択チェックボックス
+  q('#chk-all')?.addEventListener('change',e=>{
+    const sp=projPins().filter(p=>!p.vendor&&!p.done);
+    if(e.target.checked) sp.forEach(p=>assignChecked.add(p.id));
+    else assignChecked.clear();
+    renderAssignInPlace();
+  });
+
+  // 一括割当
+  q('#bulk-assign')?.addEventListener('click',()=>{
+    const v=q('#bulk-sel')?.value;
+    if(!v){showToast('業者を選択してください');return;}
+    DB.pins=DB.pins.map(p=>assignChecked.has(p.id)?{...p,vendor:v}:p);
+    assignChecked.clear();
+    saveDB();render();showToast(`${v} に${[...assignChecked].length||'複数'}件割り当てました`);
+  });
+
+  // 個別・変更割当
+  document.querySelectorAll('[data-pb]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const id=btn.dataset.pb,sel=q(`[data-ps="${id}"]`);
+      if(!sel?.value){showToast('業者を選択してください');return;}
+      DB.pins=DB.pins.map(p=>p.id===id?{...p,vendor:sel.value}:p);
+      assignChecked.delete(id);
+      saveDB();render();showToast(`${sel.value} に割り当てました`);
+    });
+  });
+
+  // 指示書タブへ
+  q('#btn-go-vendor')?.addEventListener('click',()=>{UI.tab='vendor';render();});
+}
+
+function renderAssignInPlace(){
+  // チェック状態が変わったとき画面全体再描画（チラつき防止のため軽量再描画）
+  const root=q('#sr');
+  root.innerHTML=renderAssign();
+  bindAssign();
+}
+
+// ══════════════════════════════════════
+// VENDOR VIEW + HTML DOWNLOAD
+// ══════════════════════════════════════
+
+function genInstructionHTML(vendor, pins, projName){
+  const today=new Date().toLocaleDateString('ja-JP');
+  const vPins=pins.filter(p=>p.vendor===vendor&&!p.done);
+  const items=vPins.map((pin,i)=>{
+    const si=SEVS.find(s=>s.key===pin.sev);
+    const photos=pin.photos||[];
+    return `<div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:16px;overflow:hidden;page-break-inside:avoid">
+      <div style="padding:12px 14px;border-bottom:1px solid #f3f4f6;display:flex;align-items:flex-start;gap:10px">
+        <div style="width:24px;height:24px;border-radius:50%;background:${si?.color||'#666'};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0">${i+1}</div>
+        <div style="flex:1">
+          <div style="font-size:15px;font-weight:700;color:#111;margin-bottom:5px">${esc(pin.text)}</div>
+          <span style="display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;background:${(si?.color||'#666')+'18'};color:${si?.color||'#666'}">${esc(si?.label||pin.sev)} (-${si?.pts||0}点)</span>
+          ${pin.inspectorName?`<span style="display:inline-block;font-size:10px;padding:2px 7px;border-radius:4px;background:#f3e8ff;color:#7c3aed;margin-left:4px">🔍 ${esc(pin.inspectorName)}</span>`:''}
+        </div>
+      </div>
+      ${photos.length?`<div style="padding:10px 14px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+        ${photos.map((src,j)=>`<img src="${src}" alt="写真${j+1}" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:5px;border:1px solid #e5e7eb">`).join('')}
+      </div>`:'<div style="padding:8px 14px;font-size:11px;color:#9ca3af">写真なし</div>'}
+    </div>`;
+  }).join('');
+
+  return `<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>${esc(projName)} 指摘指示書 - ${esc(vendor)}</title>
+  <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Hiragino Sans','Meiryo',sans-serif;background:#f9fafb;padding:16px;max-width:700px;margin:0 auto}@media print{body{background:#fff;padding:0}}</style>
+  </head><body>
+  <div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:20px;margin-bottom:20px">
+    <div style="font-size:11px;color:#6b7280;margin-bottom:4px">${esc(today)}</div>
+    <div style="font-size:20px;font-weight:800;color:#111;margin-bottom:4px">${esc(projName)}</div>
+    <div style="font-size:14px;color:#374151">担当業者：<strong>${esc(vendor)}</strong> 様</div>
+    <div style="margin-top:10px;padding:10px 12px;background:#fef2f2;border-radius:6px;font-size:13px;color:#dc2626;font-weight:600">
+      ⚠ 下記 ${vPins.length}件の指摘事項について、対応をお願いします。
+    </div>
+  </div>
+  ${items}
+  <div style="text-align:center;font-size:11px;color:#9ca3af;margin-top:20px">SiteQuality-Master で作成</div>
+  </body></html>`;
+}
+
+function downloadInstructionHTML(vendor){
+  const pr=proj(); if(!pr) return;
+  const sp=projPins();
+  const html=genInstructionHTML(vendor, sp, pr.name);
+  const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=`${pr.name}_指示書_${vendor}.html`;
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},1000);
+  showToast(`${vendor}の指示書をダウンロードしました`);
+}
+
+function renderVendorView(){
+  const sp=projPins();
+  const vc={};sp.filter(p=>!p.done&&p.vendor).forEach(p=>{vc[p.vendor]=(vc[p.vendor]||0)+1;});
+  const vendors=VENDORS.filter(v=>vc[v]>0);
+  const curV=UI.activeVendor&&vendors.includes(UI.activeVendor)?UI.activeVendor:(vendors[0]||null);
+  if(curV&&UI.activeVendor!==curV)UI.activeVendor=curV;
+  const flt=sp.filter(p=>p.vendor===curV&&!p.done);
+  const pr=proj();
+  let h=`<div style="display:flex;flex-direction:column;height:100%;overflow:hidden">
+  <div class="vr-tabs">
+    ${vendors.map(v=>{const hasP=sp.some(p=>p.vendor===v&&!p.done&&p.photos?.length>0);
+      return`<button class="vtab${curV===v?' on':''}" data-vt="${esc(v)}">${hasP?'<div style="width:4px;height:4px;border-radius:50%;background:#06b6d4;margin-right:3px"></div>':''}${esc(v)} <span style="opacity:.6">${vc[v]}</span></button>`;}).join('')}
+    <div style="margin-left:auto;display:flex;gap:4px;flex-shrink:0">
+      <button class="btn btn-blue btn-sm" id="vr-dl">📥 HTMLダウンロード</button>
+    </div>
+  </div>
+  <div class="scroll-view">`;
+  if(!curV||!flt.length){h+=`<div style="padding:18px;text-align:center;color:#334060;font-size:12px">${curV?curV+'の未対応指摘はありません':'業者を選択してください'}</div>`;}
+  else{flt.forEach((pin,i)=>{
+    const si=SEVS.find(s=>s.key===pin.sev);
+    h+=`<div class="icard">
+      <div class="ic-head">
+        <div class="ic-num" style="background:${si?.color||'#666'}">${i+1}</div>
+        <div class="ic-info">
+          <div class="ic-text">${esc(pin.text)}</div>
+          <div class="ic-meta">
+            <span class="tag" style="background:${(si?.color||'#666')+'22'};color:${si?.color||'#999'}">${esc(si?.label||pin.sev)}</span>
+            <span class="tag tv">${esc(pin.vendor)}</span>
+            ${pin.inspectorName?`<span class="inspector-tag">🔍${esc(pin.inspectorName)}</span>`:''}
+          </div>
+        </div>
+      </div>
+      <div class="ic-loc">
+        <div class="mini-map"><div class="mg2"></div>
+          <div class="mpin" style="left:${pin.x}%;top:${pin.y}%">
+            <div class="mpin-dot" style="background:${pinBg(pin.sev)}"></div>
+          </div>
+        </div>
+        <div class="ic-loc-text">
+          <div>📊 <span style="color:${si?.color};font-weight:700">${esc(si?.label||pin.sev)}</span></div>
+          <div>📉 減点：<strong>-${SEV_MAP[pin.sev]?.pts||0}点</strong></div>
+          ${pin.photos?.length?`<div style="color:#06b6d4">📷 ${pin.photos.length}枚</div>`:''}
+        </div>
+      </div>
+      ${pin.photos?.length?`<div class="ic-photos"><div class="ic-ph-lbl">現場写真</div>
+        <div class="ic-ph-grid">${pin.photos.map((s,j)=>`<div class="ic-ph"><img src="${s}" alt="写真${j+1}"></div>`).join('')}</div>
+      </div>`:''}
+
+    </div>`;
+  });}
+  h+=`</div></div>`;return h;
+}
+function bindVendor(){
+  document.querySelectorAll('[data-vt]').forEach(b=>b.addEventListener('click',()=>{UI.activeVendor=b.dataset.vt;render();}));
+  q('#vr-dl')?.addEventListener('click',()=>{
+    if(!UI.activeVendor){showToast('業者を選択してください');return;}
+    downloadInstructionHTML(UI.activeVendor);
+  });
+
+}
+
+// ══════════════════════════════════════
+// TOPBAR EVENTS
+// ══════════════════════════════════════
+q('#logo-home').addEventListener('click',goHome);
+q('#tb-back').addEventListener('click',goHome);
+q('#tb-tabs').addEventListener('click',e=>{
+  const btn=e.target.closest('.ttab');if(!btn)return;
+  UI.tab=btn.dataset.tab;UI.inspModal=null;render();
+});
+// ロール切り替えは監督のみトップバーに出す（検査員スタートで自動設定済み）
+// ホームに「監督として開始」ボタンを追加する必要があるが、
+// ロールはトップバー右クリックエリアで直接切り替えできるよう残す
+document.addEventListener('click',e=>{
+  const btn=e.target.closest('[data-role-switch]');
+  if(!btn)return;
+  UI.role=btn.dataset.roleSwitch;
+  if(UI.role==='inspector'){UI.inspectorId=null;UI.inspectorSessionPins=[];}
+  render();
+});
+
+// ── ホームのロール選択ボタンをカード上部に追加 ──
+const origRenderHome=renderHome;
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+loadDB();
+// ロール選択をトップバーに常設
+const roleHtml=`<div style="display:flex;gap:2px" id="role-sw">
+  <button data-role-switch="supervisor" style="padding:3px 8px;border-radius:4px;border:1px solid #1e2d45;cursor:pointer;font-size:9px;font-weight:700;background:${UI.role==='supervisor'?'#0f2040':'transparent'};color:${UI.role==='supervisor'?'#60a5fa':'#334060'};transition:all .15s">🏢 監督</button>
+  <button data-role-switch="inspector" style="padding:3px 8px;border-radius:4px;border:1px solid #1e2d45;cursor:pointer;font-size:9px;font-weight:700;background:${UI.role==='inspector'?'#0a1e14':'transparent'};color:${UI.role==='inspector'?'#34d399':'#334060'};transition:all .15s">🔍 検査員</button>
+</div>`;
+q('#tb-right').insertAdjacentHTML('afterbegin',roleHtml);
+
+// ロールボタンは常に表示
+document.addEventListener('click',e=>{
+  const btn=e.target.closest('[data-role-switch]');
+  if(!btn)return;
+  const newRole=btn.dataset.roleSwitch;
+  if(newRole===UI.role)return;
+  UI.role=newRole;
+  if(UI.role==='inspector'){UI.inspectorId=null;UI.inspectorSessionPins=[];}
+  // ロールボタンのスタイル更新
+  q('#role-sw')?.querySelectorAll('[data-role-switch]').forEach(b=>{
+    const isOn=b.dataset.roleSwitch===UI.role;
+    b.style.background=isOn?(UI.role==='supervisor'?'#0f2040':'#0a1e14'):'transparent';
+    b.style.color=isOn?(UI.role==='supervisor'?'#60a5fa':'#34d399'):'#334060';
+  });
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
